@@ -1,1 +1,1 @@
-docker build -t maxfrei750/deepparticlenet:tf1.10.0-gpu-py3 .
+docker build -t maxfrei750/mist4python:latest .
