@@ -195,6 +195,18 @@ RUN apt-get update && apt-get install -yq --no-install-recommends --fix-missing\
 RUN adduser root video
 RUN adduser jovyan video
 
+
+# =======================================================================================================================
+# Variable inspector extension for jupyterlab.
+# Source: https://github.com/lckr/jupyterlab-variableInspector
+# =======================================================================================================================
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+    curl 
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+RUN jupyter labextension install @lckr/jupyterlab_variableinspector
+
+
 # =======================================================================================================================
 # =======================================================================================================================
 # =======================================================================================================================
