@@ -122,16 +122,11 @@ COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
 RUN fix-permissions /etc/jupyter/
 
-# Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
-
 
 # =======================================================================================================================
 # Jupyter Notebook Minimal Image
 # Source: https://github.com/jupyter/docker-stacks/blob/7f1482f5a1360865bd36def104fcd716d8a89e4a/base-notebook/Dockerfile
 # =======================================================================================================================
-
-USER root
 
 # Install all OS dependencies for fully functional notebook server
 RUN apt-get update && apt-get install -yq --no-install-recommends \
@@ -156,9 +151,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     unzip \
     nano \
     && rm -rf /var/lib/apt/lists/*
-
-# Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
 
 
 # =======================================================================================================================
@@ -207,7 +199,9 @@ RUN adduser root video
 RUN adduser jovyan video
 
 # =======================================================================================================================
-# Final Settings
 # =======================================================================================================================
-WORKDIR $HOME
+# =======================================================================================================================
+# Set user and working directroy.
+# ======================================================================================================================= 
 USER $NB_UID
+WORKDIR $HOME
