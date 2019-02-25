@@ -153,6 +153,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
 WORKDIR /root/
 ARG BRANCH="master"
 
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7638D0442B90D010 04EE7237B7D453EC 
+
 RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >> /etc/apt/sources.list.d/unstable.list &&\
     apt-get update && apt-get install -y \
     gcc \
