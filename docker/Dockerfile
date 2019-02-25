@@ -182,8 +182,10 @@ RUN git submodule update --init && \
 # Blender
 # Source: https://launchpad.net/~thomas-schiex/+archive/ubuntu/blender/
 # =======================================================================================================================
-RUN add-apt-repository ppa:thomas-schiex/blender
 RUN apt-get update && apt-get install -yq --no-install-recommends \
+    software-properties-common
+RUN add-apt-repository ppa:thomas-schiex/blender
+RUN apt-get update && apt-get install -yq --no-install-recommends --fix-missing\
     blender \
     nvidia-modprobe
 
