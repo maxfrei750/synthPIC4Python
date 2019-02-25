@@ -49,19 +49,19 @@ distinguished_name = req_distinguished_name
     os.chmod(pem_file, stat.S_IRUSR | stat.S_IWUSR)
     c.NotebookApp.certfile = pem_file
 
-# Change default umask for all subprocesses of the notebook server if set in
-# the environment
-if 'NB_UMASK' in os.environ:
-    os.umask(int(os.environ['NB_UMASK'], 8))
+# # Change default umask for all subprocesses of the notebook server if set in
+# # the environment
+# if 'NB_UMASK' in os.environ:
+#     os.umask(int(os.environ['NB_UMASK'], 8))
 
-# Reference: https://svds.com/jupyter-notebook-best-practices-for-data-science/
-def post_save(model, os_path, contents_manager):
-    """post-save hook for converting notebooks to .py scripts"""
-    if model['type'] != 'notebook':
-        return  # only do this for notebooks
-    d, fname = os.path.split(os_path)
-    check_call(['jupyter', 'nbconvert', '--to', 'script', fname], cwd=d)
-    check_call(['jupyter', 'nbconvert', '--to', 'html', fname], cwd=d)
+# # Reference: https://svds.com/jupyter-notebook-best-practices-for-data-science/
+# def post_save(model, os_path, contents_manager):
+#     """post-save hook for converting notebooks to .py scripts"""
+#     if model['type'] != 'notebook':
+#         return  # only do this for notebooks
+#     d, fname = os.path.split(os_path)
+#     check_call(['jupyter', 'nbconvert', '--to', 'script', fname], cwd=d)
+#     check_call(['jupyter', 'nbconvert', '--to', 'html', fname], cwd=d)
 
 
-c.FileContentsManager.post_save_hook = post_save
+# c.FileContentsManager.post_save_hook = post_save
