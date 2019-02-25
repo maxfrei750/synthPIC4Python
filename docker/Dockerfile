@@ -208,7 +208,17 @@ RUN jupyter labextension install @lckr/jupyterlab_variableinspector
 
 
 # =======================================================================================================================
+# Matplotlib Jupyter Extension
+# Source: https://github.com/matplotlib/jupyter-matplotlib
 # =======================================================================================================================
+RUN pip --no-cache-dir install \
+    ipympl
+# If using JupyterLab
+# Install nodejs: https://nodejs.org/en/download/
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
+RUN jupyter labextension install jupyter-matplotlib
+
+
 # =======================================================================================================================
 # Add local files as late as possible to avoid cache busting
 # ======================================================================================================================= 
