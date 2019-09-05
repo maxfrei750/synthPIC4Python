@@ -1,0 +1,22 @@
+name: synthpic
+channels:
+- defaults
+- conda-forge
+- kitsune.one
+dependencies:
+- python
+- pymesh2
+- python-blender
+- numpy
+- matplotlib
+- jupyter
+- jupytext
+- ipympl
+- pillow
+- seaborn
+- pandas
+- scikit-image
+- imgaug
+- pip
+- pip:
+    - pyrender
