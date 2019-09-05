@@ -115,23 +115,11 @@ WORKDIR $HOME
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["start-notebook.sh"]
 
-# Add local files as late as possible to avoid cache busting
-COPY start.sh /usr/local/bin/
-COPY start-notebook.sh /usr/local/bin/
-COPY start-singleuser.sh /usr/local/bin/
-COPY jupyter_notebook_config.py /etc/jupyter/
-RUN fix-permissions /etc/jupyter/
-
-# Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
-
 
 # =======================================================================================================================
 # Jupyter Notebook Minimal Image
 # Source: https://github.com/jupyter/docker-stacks/blob/7f1482f5a1360865bd36def104fcd716d8a89e4a/base-notebook/Dockerfile
 # =======================================================================================================================
-
-USER root
 
 # Install all OS dependencies for fully functional notebook server
 RUN apt-get update && apt-get install -yq --no-install-recommends \
@@ -157,9 +145,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     nano \
     && rm -rf /var/lib/apt/lists/*
 
-# Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
-
 
 # =======================================================================================================================
 # PyMesh
@@ -167,6 +152,8 @@ USER $NB_UID
 # =======================================================================================================================
 WORKDIR /root/
 ARG BRANCH="master"
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7638D0442B90D010 04EE7237B7D453EC 
 
 RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >> /etc/apt/sources.list.d/unstable.list &&\
     apt-get update && apt-get install -y \
@@ -197,8 +184,10 @@ RUN git submodule update --init && \
 # Blender
 # Source: https://launchpad.net/~thomas-schiex/+archive/ubuntu/blender/
 # =======================================================================================================================
-RUN add-apt-repository ppa:thomas-schiex/blender
 RUN apt-get update && apt-get install -yq --no-install-recommends \
+    software-properties-common
+RUN add-apt-repository ppa:thomas-schiex/blender
+RUN apt-get update && apt-get install -yq --no-install-recommends --fix-missing\
     blender \
     nvidia-modprobe
 
@@ -206,8 +195,49 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
 RUN adduser root video
 RUN adduser jovyan video
 
+
 # =======================================================================================================================
-# Final Settings
+# Variable inspector extension for jupyterlab.
+# Source: https://github.com/lckr/jupyterlab-variableInspector
 # =======================================================================================================================
-WORKDIR $HOME
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+    curl 
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+RUN jupyter labextension install @lckr/jupyterlab_variableinspector
+
+
+# =======================================================================================================================
+# Matplotlib Jupyter Extension
+# Source: https://github.com/matplotlib/jupyter-matplotlib
+# =======================================================================================================================
+RUN pip --no-cache-dir install \
+    ipympl
+# If using JupyterLab
+# Install nodejs: https://nodejs.org/en/download/
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
+RUN jupyter labextension install jupyter-matplotlib
+
+
+# =======================================================================================================================
+# Add python packages.
+# ======================================================================================================================= 
+RUN pip --no-cache-dir install \
+    matplotlib
+
+
+# =======================================================================================================================
+# Add local files as late as possible to avoid cache busting
+# ======================================================================================================================= 
+COPY start.sh /usr/local/bin/
+COPY start-notebook.sh /usr/local/bin/
+COPY start-singleuser.sh /usr/local/bin/
+COPY jupyter_notebook_config.py /etc/jupyter/
+RUN fix-permissions /etc/jupyter/
+
+
+# =======================================================================================================================
+# Set user and working directroy.
+# ======================================================================================================================= 
 USER $NB_UID
+WORKDIR $HOME
