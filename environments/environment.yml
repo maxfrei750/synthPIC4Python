@@ -16,6 +16,7 @@ dependencies:
 - pandas
 - scikit-image
 - imgaug
+- noise
 - pip
 - pip:
     - pyrender
