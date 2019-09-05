@@ -5,8 +5,7 @@ channels:
 - kitsune.one
 dependencies:
 - python
-- pymesh2
-- python-blender
+- trimesh
 - numpy
 - matplotlib
 - jupyter
