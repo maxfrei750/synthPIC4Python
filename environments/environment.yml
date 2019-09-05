@@ -2,7 +2,6 @@ name: synthpic
 channels:
 - defaults
 - conda-forge
-- kitsune.one
 dependencies:
 - python
 - trimesh
