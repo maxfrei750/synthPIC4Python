@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="frei@134.91.65.120:22">
+    <serverData>
+      <paths name="frei@134.91.65.120:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/frei/Projects/synthPIC4Python" local="$PROJECT_DIR$" web="134.91.65.120" />
+            <mapping deploy="/home/frei/Projects/CycleGAN4ParticleAnalysis" local="$PROJECT_DIR$/../CycleGAN4ParticleAnalysis" web="134.91.65.120" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
