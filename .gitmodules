@@ -1,0 +1,3 @@
+[submodule "external/blender_autocomplete"]
+	path = external/blender_autocomplete
+	url = git@github.com:Korchy/blender_autocomplete.git
