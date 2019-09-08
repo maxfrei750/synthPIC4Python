@@ -34,6 +34,7 @@ try:
     # Set render settings.
     R.engine = 'CYCLES'
     C.scene.cycles.device = 'GPU'
+
     R.image_settings.color_mode = 'RGBA'
     R.image_settings.color_depth = '8'
     R.film_transparent = True
@@ -42,15 +43,20 @@ try:
     primitive = append_primitive("D:\\sciebo\\Dissertation\\Python\\synthPIC4Python\\primitives\\tem_bumpy_spherical.blend")
 
     n_particles = 10
-    
+
     for particle_id in range(n_particles):
         particle_name = "particle"+str(particle_id)
-        particle1 = duplicate_object(primitive, particle_name)
+        particle = duplicate_object(primitive, particle_name)
+
+        randomize_and_bake_shape(particle)
+
+        particle_size = random.randint(50, 100)
+
+        set_size(particle, (particle_size, particle_size, particle_size))
 
         x = random.randint(-200, 200)
         y = random.randint(-200, 200)
-
-        particle1.location = (x, y, 0)
+        particle.location = (x, y, 0)
 
     # Hide primitive
     primitive.hide_viewport = True
