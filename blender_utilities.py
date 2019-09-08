@@ -93,3 +93,13 @@ def set_size(particle, target_size_xyz):
 def set_smooth_shading(particle, state):
     for polygon in particle.data.polygons:
         polygon.use_smooth = state
+
+
+def make_rigid(obj, state):
+    bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+
+    if state:
+        bpy.ops.rigidbody.objects_add(type="ACTIVE")
+    else:
+        bpy.ops.rigidbody.objects_remove()
