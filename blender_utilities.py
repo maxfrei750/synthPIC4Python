@@ -56,7 +56,7 @@ def duplicate_object(source_object, name):
     return new_object
 
 
-def randomize_and_bake(particle):
+def randomize_and_bake_shape(particle):
 
     previous_location = tuple(particle.location)
 
