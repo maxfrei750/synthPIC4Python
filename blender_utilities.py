@@ -168,3 +168,15 @@ def enable_all_rendering_devices():
         print(device)
         device.use = True
 
+
+def apply_default_settings():
+    bpy.context.scene.render.engine = "CYCLES"
+    enable_all_rendering_devices()
+
+    bpy.context.scene.render.image_settings.color_mode = "RGBA"
+    bpy.context.scene.render.image_settings.color_depth = "8"
+    bpy.context.scene.render.image_settings.compression = 0
+
+    bpy.context.scene.render.film_transparent = True
+
+    bpy.context.scene.use_gravity = False
