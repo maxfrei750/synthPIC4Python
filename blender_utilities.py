@@ -146,3 +146,25 @@ def place_randomly(particle_list,
         if do_random_rotation:
             random_rotation = tuple(np.random.rand(3) * 2 * np.pi)
             particle.rotation_euler = random_rotation
+
+
+def enable_all_rendering_devices():
+    scene = bpy.context.scene
+    scene.cycles.device = "GPU"
+
+    prefs = bpy.context.preferences
+    cprefs = prefs.addons["cycles"].preferences
+
+    # Attempt to set GPU device types if available
+    for compute_device_type in ["CUDA", "OPENCL", "NONE"]:
+        try:
+            cprefs.compute_device_type = compute_device_type
+            break
+        except TypeError:
+            pass
+
+    # Enable all CPU and GPU devices
+    for device in cprefs.devices:
+        print(device)
+        device.use = True
+
