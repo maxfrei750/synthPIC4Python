@@ -41,7 +41,9 @@ def append_primitive(blend_file):
         filename=filename,
         directory=directory)
 
-    return bpy.data.objects.get(blender_object)
+    primitive = bpy.data.objects[-1]
+
+    return primitive
 
 
 def duplicate_object(source_object, name):
