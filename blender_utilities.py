@@ -103,3 +103,29 @@ def make_rigid(obj, state):
         bpy.ops.rigidbody.objects_add(type="ACTIVE")
     else:
         bpy.ops.rigidbody.objects_remove()
+
+
+def relax_collisions(particle_list,
+                     damping,
+                     collision_shape,
+                     n_frames):
+    collision_shape = collision_shape.upper()
+    bpy.context.scene.use_gravity = False
+
+    if bpy.context.scene.rigidbody_world is None:
+        bpy.ops.rigidbody.world_add()
+
+    bpy.context.scene.rigidbody_world.enabled = True
+
+    for particle in particle_list:
+        make_rigid(particle, True)
+
+        particle.rigid_body.collision_shape = collision_shape
+        particle.rigid_body.angular_damping = damping
+        particle.rigid_body.linear_damping = damping
+
+    bpy.context.scene.frame_end = n_frames
+    bpy.ops.ptcache.free_bake_all()
+    bpy.ops.ptcache.bake_all(bake=True)
+    bpy.context.scene.frame_set(n_frames)
+
