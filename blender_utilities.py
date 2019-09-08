@@ -129,3 +129,16 @@ def relax_collisions(particle_list,
     bpy.ops.ptcache.bake_all(bake=True)
     bpy.context.scene.frame_set(n_frames)
 
+
+def place_randomly(particle_list,
+                   lower_space_boundaries_xyz,
+                   upper_space_boundaries_xyz,
+                   do_random_rotation=False):
+    for particle in particle_list:
+        random_location = tuple(np.random.randint(low=lower_space_boundaries_xyz,
+                                                  high=upper_space_boundaries_xyz))
+        particle.location = random_location
+
+        if do_random_rotation:
+            random_rotation = tuple(np.random.rand(3) * 2 * np.pi)
+            particle.rotation_euler = random_rotation
