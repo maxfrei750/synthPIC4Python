@@ -51,7 +51,6 @@ def duplicate_object(source_object, name):
     new_object.data = new_object.data.copy()
     new_object.animation_data_clear()
     new_object.name = name
-    # Link the new object to the appropriate collection
     bpy.context.scene.collection.objects.link(new_object)
 
     return new_object
