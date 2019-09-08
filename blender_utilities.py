@@ -88,3 +88,8 @@ def set_size(particle, target_size_xyz):
 
     scale_xyz = tuple(a/b for a, b in zip(target_size_xyz, particle.dimensions))
     particle.scale = scale_xyz
+
+
+def set_smooth_shading(particle, state):
+    for polygon in particle.data.polygons:
+        polygon.use_smooth = state
