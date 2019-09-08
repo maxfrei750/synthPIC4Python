@@ -39,7 +39,7 @@ try:
     R.film_transparent = True
 
     # Create geometry.
-    primitive = append_primitive("D:\\sciebo\\Dissertation\\Python\\synthPIC4Python\\primitives\\bumpy_spherical.blend")
+    primitive = append_primitive("D:\\sciebo\\Dissertation\\Python\\synthPIC4Python\\primitives\\tem_bumpy_spherical.blend")
 
     n_particles = 10
     
