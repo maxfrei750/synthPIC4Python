@@ -17,7 +17,7 @@ import blender_utilities
 import importlib
 importlib.reload(blender_utilities)
 
-from blender_utilities import append_primitive, duplicate_object
+from blender_utilities import *
 
 image_id = 0
 output_dir_base = "/tmp"
