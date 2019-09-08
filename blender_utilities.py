@@ -56,6 +56,10 @@ def duplicate_object(source_object, name):
     return new_object
 
 
+def delete_objects(object_list):
+    bpy.ops.object.delete({"selected_objects": [object_list]})
+
+
 def randomize_and_bake_shape(particle):
 
     previous_location = tuple(particle.location)
