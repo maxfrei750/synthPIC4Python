@@ -3,6 +3,7 @@ import numpy as np
 import bpy
 import random
 
+
 def create_raw_mesh():
     mesh_raw = trimesh.creation.icosphere(subdivisions=5, radius=50)
 
@@ -19,10 +20,10 @@ def set_background_color(color):
     if len(color) == 3:
         color += (1,)
 
-    world = bpy.data.worlds['World']
+    world = bpy.data.worlds["World"]
     world.use_nodes = True
 
-    bg = world.node_tree.nodes['Background']
+    bg = world.node_tree.nodes["Background"]
     bg.inputs[0].default_value = color
     bg.inputs[1].default_value = 1.0
 
@@ -61,7 +62,6 @@ def delete_objects(object_list):
 
 
 def randomize_and_bake_shape(particle):
-
     previous_location = tuple(particle.location)
 
     range_limit = 1000
@@ -90,7 +90,7 @@ def set_size(particle, target_size_xyz):
     # if len(target_size_xyz) == 1:
     #     target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
 
-    scale_xyz = tuple(a/b for a, b in zip(target_size_xyz, particle.dimensions))
+    scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
     particle.scale = scale_xyz
 
 
