@@ -11,7 +11,7 @@ def set_background_color(color):
     bg = world.node_tree.nodes["Background"]
     bg.inputs[0].default_value = color
     bg.inputs[1].default_value = 1.0
-    
+
 
 def enable_all_rendering_devices():
     scene = bpy.context.scene
@@ -30,7 +30,6 @@ def enable_all_rendering_devices():
 
     # Enable all CPU and GPU devices
     for device in cycles_preferences.devices:
-        print(device)
         device.use = True
 
 
