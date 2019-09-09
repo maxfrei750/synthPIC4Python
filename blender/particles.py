@@ -13,6 +13,13 @@ def is_iterable(obj):
         return True
 
 
+def ensure_iterability(obj):
+    if not is_iterable(obj):
+        obj = [obj]
+
+    return obj
+
+
 def create_raw_dummy_mesh():
     mesh_raw = trimesh.creation.icosphere(subdivisions=5, radius=50)
 
@@ -59,8 +66,7 @@ def delete(particles):
 
 
 def randomize_and_bake_shape(particles):
-    if not is_iterable(particles):
-        particles = list(particles)
+    particles = ensure_iterability(particles)
 
     for particle in particles:
         previous_location = tuple(particle.location)
@@ -88,8 +94,7 @@ def randomize_and_bake_shape(particles):
 
 
 def set_size(particles, target_size_xyz):
-    if not is_iterable(particles):
-        particles = list(particles)
+    particles = ensure_iterability(particles)
 
     if not is_iterable(target_size_xyz):
         target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
@@ -100,17 +105,15 @@ def set_size(particles, target_size_xyz):
 
 
 def set_smooth_shading(particles, state):
-    if not is_iterable(particles):
-        particles = list(particles)
+    particles = ensure_iterability(particles)
 
     for particle in particles:
         for polygon in particle.data.polygons:
             polygon.use_smooth = state
 
 
-def make_rigid(particles, state):
-    if not is_iterable(particles):
-        particles = list(particles)
+def make_rigid(particles, state=True):
+    particles = ensure_iterability(particles)
 
     for particle in particles:
         bpy.ops.object.select_all(action="DESELECT")
