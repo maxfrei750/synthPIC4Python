@@ -3,6 +3,8 @@ import numpy as np
 import bpy
 import random
 
+# TODO: Split this module in multiple modules: blender and particles
+# TODO: Rename functions with particle context.
 
 def create_raw_mesh():
     mesh_raw = trimesh.creation.icosphere(subdivisions=5, radius=50)
