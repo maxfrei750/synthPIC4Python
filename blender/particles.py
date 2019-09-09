@@ -91,6 +91,9 @@ def set_size(particles, target_size_xyz):
     if not is_iterable(particles):
         particles = list(particles)
 
+    if not is_iterable(target_size_xyz):
+        target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
+
     for particle in particles:
         scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
         particle.scale = scale_xyz
