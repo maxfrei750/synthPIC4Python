@@ -11,14 +11,17 @@ root_dir = os.path.dirname(D.filepath)
 if root_dir not in sys.path:
     sys.path.append(root_dir)
 
-import blender_utilities
+import blender.particles
+import blender.scene
 
 # Force reload in case you edit the source after you first start the blender session.
 import importlib
 
-importlib.reload(blender_utilities)
+importlib.reload(blender.particles)
+importlib.reload(blender.scene)
 
-from blender_utilities import *
+from blender.particles import *
+from blender.scene import *
 
 # create cubes
 n_particles = 50
