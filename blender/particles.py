@@ -35,18 +35,18 @@ def load_primitive(blend_file):
     return primitive
 
 
-def duplicate(source_object, name):
-    new_object = source_object.copy()
-    new_object.data = new_object.data.copy()
-    new_object.animation_data_clear()
-    new_object.name = name
-    bpy.context.scene.collection.objects.link(new_object)
+def duplicate(particle, name):
+    new_particle = particle.copy()
+    new_particle.data = new_particle.data.copy()
+    new_particle.animation_data_clear()
+    new_particle.name = name
+    bpy.context.scene.collection.objects.link(new_particle)
 
-    return new_object
+    return new_particle
 
 
-def delete(object_list):
-    bpy.ops.object.delete({"selected_objects": [object_list]})
+def delete(particles):
+    bpy.ops.object.delete({"selected_objects": [particles]})
 
 
 def randomize_and_bake_shape(particle):
@@ -87,9 +87,9 @@ def set_smooth_shading(particle, state):
         polygon.use_smooth = state
 
 
-def make_rigid(obj, state):
+def make_rigid(particle, state):
     bpy.ops.object.select_all(action="DESELECT")
-    obj.select_set(True)
+    particle.select_set(True)
 
     if state:
         bpy.ops.rigidbody.objects_add(type="ACTIVE")
@@ -97,7 +97,7 @@ def make_rigid(obj, state):
         bpy.ops.rigidbody.objects_remove()
 
 
-def relax_collisions(particle_list,
+def relax_collisions(particles,
                      damping,
                      collision_shape,
                      n_frames):
@@ -109,7 +109,7 @@ def relax_collisions(particle_list,
 
     bpy.context.scene.rigidbody_world.enabled = True
 
-    for particle in particle_list:
+    for particle in particles:
         make_rigid(particle, True)
 
         particle.rigid_body.collision_shape = collision_shape
@@ -122,11 +122,11 @@ def relax_collisions(particle_list,
     bpy.context.scene.frame_set(n_frames)
 
 
-def place_randomly(particle_list,
+def place_randomly(particles,
                    lower_space_boundaries_xyz,
                    upper_space_boundaries_xyz,
                    do_random_rotation=False):
-    for particle in particle_list:
+    for particle in particles:
         random_location = tuple(np.random.randint(low=lower_space_boundaries_xyz,
                                                   high=upper_space_boundaries_xyz))
         particle.location = random_location
