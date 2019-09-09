@@ -4,7 +4,7 @@ import bpy
 import random
 
 
-def create_raw_mesh():
+def create_raw_dummy_mesh():
     mesh_raw = trimesh.creation.icosphere(subdivisions=5, radius=50)
 
     np.random.seed(1)
@@ -16,7 +16,7 @@ def create_raw_mesh():
     return mesh_raw
 
 
-def append_primitive(blend_file):
+def load_primitive(blend_file):
     # blend_file = "D:/path/to/the/repository.blend"
     section = "\\Object\\"
     blender_object = "primitive"
@@ -35,7 +35,7 @@ def append_primitive(blend_file):
     return primitive
 
 
-def duplicate_object(source_object, name):
+def duplicate(source_object, name):
     new_object = source_object.copy()
     new_object.data = new_object.data.copy()
     new_object.animation_data_clear()
@@ -45,7 +45,7 @@ def duplicate_object(source_object, name):
     return new_object
 
 
-def delete_objects(object_list):
+def delete(object_list):
     bpy.ops.object.delete({"selected_objects": [object_list]})
 
 

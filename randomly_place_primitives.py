@@ -11,7 +11,7 @@ root_dir = os.path.dirname(D.filepath)
 if root_dir not in sys.path:
     sys.path.append(root_dir)
 
-import blender.particles
+import blender.particles as particles
 import blender.scene
 
 # Force reload in case you edit the source after you first start the blender session.
@@ -44,13 +44,13 @@ try:
     R.film_transparent = True
 
     # Create geometry.
-    primitive = append_primitive("D:\\sciebo\\Dissertation\\Python\\synthPIC4Python\\primitives\\tem_bumpy_spherical.blend")
+    primitive = load_primitive("D:\\sciebo\\Dissertation\\Python\\synthPIC4Python\\primitives\\tem_bumpy_spherical.blend")
 
     n_particles = 10
 
     for particle_id in range(n_particles):
         particle_name = "particle"+str(particle_id)
-        particle = duplicate_object(primitive, particle_name)
+        particle = duplicate(primitive, particle_name)
 
         randomize_and_bake_shape(particle)
 
