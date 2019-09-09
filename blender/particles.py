@@ -32,6 +32,14 @@ def create_raw_dummy_mesh():
     return mesh_raw
 
 
+def hide(particles, state=True):
+    particles = ensure_iterability(particles)
+
+    for particle in particles:
+        particle.hide_viewport = state
+        particle.hide_render = state
+
+
 def load_primitive(blend_file):
     # blend_file = "D:/path/to/the/repository.blend"
     section = "\\Object\\"
