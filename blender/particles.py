@@ -24,6 +24,7 @@ def select_only(particles):
     particles = ensure_iterability(particles)
 
     bpy.ops.object.select_all(action="DESELECT")
+    bpy.context.view_layer.objects.active = particles[0]
 
     for particle in particles:
         particle.select_set(True)
@@ -135,7 +136,7 @@ def make_rigid(particles, state=True):
         select_only(particle)
 
         if state:
-            bpy.ops.rigidbody.objects_add(type="ACTIVE")
+            bpy.ops.rigidbody.object_add(type="ACTIVE")
         else:
             bpy.ops.rigidbody.objects_remove()
 
@@ -153,7 +154,7 @@ def relax_collisions(particles,
     bpy.context.scene.rigidbody_world.enabled = True
 
     for particle in particles:
-        make_rigid(particle, True)
+        make_rigid(particle)
 
         particle.rigid_body.collision_shape = collision_shape
         particle.rigid_body.angular_damping = damping
