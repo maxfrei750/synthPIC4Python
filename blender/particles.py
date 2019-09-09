@@ -2,6 +2,7 @@ import trimesh
 import numpy as np
 import bpy
 import random
+from ..utilities import is_iterable
 
 
 def create_raw_dummy_mesh():
@@ -35,11 +36,11 @@ def load_primitive(blend_file):
     return primitive
 
 
-def duplicate(particle, name):
+def duplicate(particle, new_name):
     new_particle = particle.copy()
     new_particle.data = new_particle.data.copy()
     new_particle.animation_data_clear()
-    new_particle.name = name
+    new_particle.name = new_name
     bpy.context.scene.collection.objects.link(new_particle)
 
     return new_particle
@@ -49,52 +50,65 @@ def delete(particles):
     bpy.ops.object.delete({"selected_objects": [particles]})
 
 
-def randomize_and_bake_shape(particle):
-    previous_location = tuple(particle.location)
+def randomize_and_bake_shape(particles):
+    if not is_iterable(particles):
+        particles = list(particles)
 
-    range_limit = 1000
+    for particle in particles:
+        previous_location = tuple(particle.location)
 
-    x = random.randint(0, range_limit)
-    y = random.randint(0, range_limit)
-    z = random.randint(0, range_limit)
+        range_limit = 1000
 
-    print((x, y, z))
+        x = random.randint(0, range_limit)
+        y = random.randint(0, range_limit)
+        z = random.randint(0, range_limit)
 
-    # Move particle to randomize global noises.
-    particle.location = (x, y, z)
+        print((x, y, z))
 
-    # bpy.context.scene.objects.active = particle
-    # bpy.context.view_layer.objects.active = particle
-    bpy.ops.object.select_all(action="DESELECT")
-    particle.select_set(True)
-    bpy.context.view_layer.objects.active = particle
-    bpy.ops.object.convert(target="MESH")
+        # Move particle to randomize global noises.
+        particle.location = (x, y, z)
 
-    # Reset location.
-    particle.location = previous_location
+        # bpy.context.scene.objects.active = particle
+        # bpy.context.view_layer.objects.active = particle
+        bpy.ops.object.select_all(action="DESELECT")
+        particle.select_set(True)
+        bpy.context.view_layer.objects.active = particle
+        bpy.ops.object.convert(target="MESH")
 
-
-def set_size(particle, target_size_xyz):
-    # if len(target_size_xyz) == 1:
-    #     target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
-
-    scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
-    particle.scale = scale_xyz
+        # Reset location.
+        particle.location = previous_location
 
 
-def set_smooth_shading(particle, state):
-    for polygon in particle.data.polygons:
-        polygon.use_smooth = state
+def set_size(particles, target_size_xyz):
+    if not is_iterable(particles):
+        particles = list(particles)
+
+    for particle in particles:
+        scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
+        particle.scale = scale_xyz
 
 
-def make_rigid(particle, state):
-    bpy.ops.object.select_all(action="DESELECT")
-    particle.select_set(True)
+def set_smooth_shading(particles, state):
+    if not is_iterable(particles):
+        particles = list(particles)
 
-    if state:
-        bpy.ops.rigidbody.objects_add(type="ACTIVE")
-    else:
-        bpy.ops.rigidbody.objects_remove()
+    for particle in particles:
+        for polygon in particle.data.polygons:
+            polygon.use_smooth = state
+
+
+def make_rigid(particles, state):
+    if not is_iterable(particles):
+        particles = list(particles)
+
+    for particle in particles:
+        bpy.ops.object.select_all(action="DESELECT")
+        particle.select_set(True)
+
+        if state:
+            bpy.ops.rigidbody.objects_add(type="ACTIVE")
+        else:
+            bpy.ops.rigidbody.objects_remove()
 
 
 def relax_collisions(particles,
