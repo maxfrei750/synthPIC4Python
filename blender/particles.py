@@ -20,6 +20,15 @@ def ensure_iterability(obj):
     return obj
 
 
+def select_only(particles):
+    ensure_iterability(particles)
+
+    bpy.ops.object.select_all(action="DESELECT")
+
+    for particle in particles:
+        particle.select_set(True)
+
+
 def create_raw_dummy_mesh():
     mesh_raw = trimesh.creation.icosphere(subdivisions=5, radius=50)
 
@@ -92,8 +101,7 @@ def randomize_and_bake_shape(particles):
 
         # bpy.context.scene.objects.active = particle
         # bpy.context.view_layer.objects.active = particle
-        bpy.ops.object.select_all(action="DESELECT")
-        particle.select_set(True)
+        select_only(particle)
         bpy.context.view_layer.objects.active = particle
         bpy.ops.object.convert(target="MESH")
 
@@ -124,8 +132,7 @@ def make_rigid(particles, state=True):
     particles = ensure_iterability(particles)
 
     for particle in particles:
-        bpy.ops.object.select_all(action="DESELECT")
-        particle.select_set(True)
+        select_only(particle)
 
         if state:
             bpy.ops.rigidbody.objects_add(type="ACTIVE")
