@@ -21,7 +21,7 @@ def ensure_iterability(obj):
 
 
 def select_only(particles):
-    ensure_iterability(particles)
+    particles = ensure_iterability(particles)
 
     bpy.ops.object.select_all(action="DESELECT")
 
