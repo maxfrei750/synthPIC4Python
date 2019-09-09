@@ -1,89 +1,81 @@
-::::::::::::::::::::::::::::::::::::::::::::
-:: Elevate.cmd - Version 4
-:: Automatically check & get admin rights
-:: see "https://stackoverflow.com/a/12264592/1016343" for description
-::::::::::::::::::::::::::::::::::::::::::::
 @echo off
-CLS
+cls
 
-:init
-setlocal DisableDelayedExpansion
-set cmdInvoke=1
-set winSysFolder=System32
-set "batchPath=%~0"
-for %%k in (%0) do set batchName=%%~nk
-set "vbsGetPrivileges=%temp%\OEgetPriv_%batchName%.vbs"
-setlocal EnableDelayedExpansion
+set blender_version=2.80
+set blender_platform=windows64
 
-:checkPrivileges
-NET FILE 1>NUL 2>NUL
-if '%errorlevel%' == '0' ( goto gotPrivileges ) else ( goto getPrivileges )
+set blender_string=blender-%blender_version%-%blender_platform%
+set blender_python_directory=%blender_string%\%blender_version%\python
 
-:getPrivileges
-if '%1'=='ELEV' (echo ELEV & shift /1 & goto gotPrivileges)
-ECHO.
-ECHO **************************************
-ECHO Invoking UAC for Privilege Escalation
-ECHO **************************************
+cd external
 
-ECHO Set UAC = CreateObject^("Shell.Application"^) > "%vbsGetPrivileges%"
-ECHO args = "ELEV " >> "%vbsGetPrivileges%"
-ECHO For Each strArg in WScript.Arguments >> "%vbsGetPrivileges%"
-ECHO args = args ^& strArg ^& " "  >> "%vbsGetPrivileges%"
-ECHO Next >> "%vbsGetPrivileges%"
+echo [32mDeleting external\%blender_string% if it exists...[0m
+rmdir /S /Q %blender_string% 2> nul
+ver > nul
 
-if '%cmdInvoke%'=='1' goto InvokeCmd 
+echo. 
+echo [32mDownloading blender to external\%blender_string%.zip (may take a few minutes)...[0m 
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://ftp.halifax.rwth-aachen.de/blender/release/Blender%blender_version%/%blender_string%.zip', '%blender_string%.zip')"
 
-ECHO UAC.ShellExecute "!batchPath!", args, "", "runas", 1 >> "%vbsGetPrivileges%"
-goto ExecElevation
+echo. 
+echo [32mUnzipping blender...[0m 
+powershell -Command "Expand-Archive %blender_string%.zip ./"
 
-:InvokeCmd
-ECHO args = "/c """ + "!batchPath!" + """ " + args >> "%vbsGetPrivileges%"
-ECHO UAC.ShellExecute "%SystemRoot%\%winSysFolder%\cmd.exe", args, "", "runas", 1 >> "%vbsGetPrivileges%"
-
-:ExecElevation
-"%SystemRoot%\%winSysFolder%\WScript.exe" "%vbsGetPrivileges%" %*
-exit /B
-
-:gotPrivileges
-setlocal & cd /d %~dp0
-if '%1'=='ELEV' (del "%vbsGetPrivileges%" 1>nul 2>nul  &  shift /1)
-
-::::::::::::::::::::::::::::
-::START
-::::::::::::::::::::::::::::
-
-set blender_directory=C:\Program Files\Blender Foundation\Blender\2.80
-c:
-cd "%blender_directory%\python\bin\" 2> nul
+echo. 
+echo [32mDeleting blender archive, as it is no longer needed...[0m 
+del %blender_string%.zip
 
 if ERRORLEVEL 1 (
-    echo [31mCouldn't find compatible blender installation. Please check if the supplied path is correct.[0m
+    echo [33mWarning: There was an error deleting the blender archive. Please delete it manually at external\%blender_string%.zip.[0m
+    ver > nul
+)
+
+cd "%blender_python_directory%\bin\" 2> nul
+
+if ERRORLEVEL 1 (
+	echo. 
+    echo [31mCouldn't find python.exe in external\%blender_python_directory%\bin\. Please check if blender was downloaded correctly and check the paths within this script.[0m
     echo. 
     pause
     exit /b 1
 )
 
-python.exe -m ensurepip
-python.exe -m pip install -U pip
+echo. 
+echo [32mInstalling and updating pip...[0m 
+python -m ensurepip
+
+echo. 
+python -m pip install -U pip
 
 echo.
-echo [32mUninstalling the numpy version that come with blender, because it is buggy.[0m 
-python.exe -m pip uninstall --yes numpy
+echo [32mUninstalling the numpy version that comes with blender (because it is buggy)...[0m 
+python -m pip uninstall --yes numpy
 
 echo.
-echo [32mDeleting numpy remains.[0m 
-rmdir /S /Q %blender_directory%\python\lib\site-packages\numpy 2> nul
+echo [32mDeleting numpy remains...[0m 
+rmdir /S /Q %blender_python_directory%\lib\site-packages\numpy 2> nul
+
+if ERRORLEVEL 1 (
+    echo [31mThere was an error deleting the numpy remains.[0m
+    echo. 
+    pause
+    exit /b 1
+)
 
 echo.
-echo [32mInstalling dependencies.[0m 
-python.exe -m pip install numpy
-python.exe -m pip install trimesh
+echo [32mInstalling python dependencies...[0m 
+cd "%blender_python_directory%\bin\" 2> nul
+
+echo. 
+python -m pip install numpy
+
+echo. 
+python -m pip install trimesh
 
 if ERRORLEVEL 0 (
     echo.
-	echo [32mSetup complete.[0m
-	echo. 
+	echo [32mSetup complete![0m
 )
 
+echo. 
 pause
