@@ -2,7 +2,15 @@ import trimesh
 import numpy as np
 import bpy
 import random
-from ..utilities import is_iterable
+
+
+def is_iterable(obj):
+    try:
+        iterator = iter(obj)
+    except TypeError:
+        return False
+    else:
+        return True
 
 
 def create_raw_dummy_mesh():
