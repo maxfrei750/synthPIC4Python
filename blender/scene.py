@@ -13,6 +13,14 @@ def set_background_color(color):
     bg.inputs[1].default_value = 1.0
 
 
+def set_resolution(resolution):
+    bpy.context.scene.render.resolution_x = resolution[0]
+    bpy.context.scene.render.resolution_y = resolution[1]
+
+    for camera in bpy.data.cameras:
+        camera.ortho_scale = max(resolution)
+
+
 def enable_all_rendering_devices():
     scene = bpy.context.scene
     scene.cycles.device = "GPU"
