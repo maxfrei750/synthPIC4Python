@@ -158,6 +158,7 @@ def relax_collisions(particles,
         particle.rigid_body.linear_damping = damping
 
     bpy.context.scene.frame_end = n_frames
+    bpy.context.scene.rigidbody_world.point_cache.frame_end = n_frames
     bpy.ops.ptcache.free_bake_all()
     bpy.ops.ptcache.bake_all(bake=True)
     bpy.context.scene.frame_set(n_frames)
