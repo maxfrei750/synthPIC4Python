@@ -1,1 +1,0 @@
-docker build -t maxfrei750/mist4python:latest .
