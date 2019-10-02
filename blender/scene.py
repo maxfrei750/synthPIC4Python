@@ -1,4 +1,5 @@
 import bpy
+import os
 
 
 def set_background_color(color):
@@ -70,3 +71,28 @@ def render_to_file(absolute_file_path):
     bpy.context.scene.render.filepath = absolute_file_path
     bpy.ops.render.render(write_still=True)
     bpy.context.scene.render.filepath = previous_path
+
+
+def reset_state():
+    assert bpy.data.filepath.endswith("_saved_state"), "Cannot reset state because there is no saved state."
+
+    bpy.ops.wm.open_mainfile(filepath=bpy.data.filepath)
+
+
+def save_state():
+    if not bpy.data.filepath.endswith("_saved_state"):
+        state_file_path = bpy.data.filepath + "_saved_state"
+
+    bpy.ops.wm.save_as_mainfile(filepath=state_file_path)
+
+
+def clear_state():
+    if not bpy.data.filepath.endswith("_saved_state"):
+        state_file_path = bpy.data.filepath + "_saved_state"
+        original_file_path = bpy.data.filepath
+    else:
+        state_file_path = bpy.data.filepath
+        original_file_path = state_file_path[:-12]
+
+    bpy.ops.wm.open_mainfile(filepath=original_file_path)
+    os.remove(state_file_path)
