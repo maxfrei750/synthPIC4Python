@@ -79,7 +79,8 @@ def duplicate(particle, new_name):
 
 
 def delete(particles):
-    bpy.ops.object.delete({"selected_objects": [particles]})
+    particles = ensure_iterability(particles)
+    bpy.ops.object.delete({"selected_objects": particles})
 
 
 def randomize_and_bake_shape(particles):
