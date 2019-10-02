@@ -51,7 +51,6 @@ def hide(particles, state=True):
 
 
 def load_primitive(blend_file):
-    # blend_file = "D:/path/to/the/repository.blend"
     section = "\\Object\\"
     blender_object = "primitive"
 
@@ -99,9 +98,6 @@ def randomize_and_bake_shape(particles):
 
         # Move particle to randomize global noises.
         particle.location = (x, y, z)
-
-        # bpy.context.scene.objects.active = particle
-        # bpy.context.view_layer.objects.active = particle
         select_only(particle)
         bpy.context.view_layer.objects.active = particle
         bpy.ops.object.convert(target="MESH")
