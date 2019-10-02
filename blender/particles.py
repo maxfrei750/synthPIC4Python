@@ -2,6 +2,7 @@ import trimesh
 import numpy as np
 import bpy
 import random
+import blender.utilities
 
 
 def is_iterable(obj):
@@ -81,6 +82,7 @@ def duplicate(particle, new_name):
 def delete(particles):
     particles = ensure_iterability(particles)
     bpy.ops.object.delete({"selected_objects": particles})
+    blender.utilities.purge_unused_data()
 
 
 def randomize_and_bake_shape(particles):
