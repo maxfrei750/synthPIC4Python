@@ -41,10 +41,20 @@ def enable_all_rendering_devices():
         device.use = True
 
 
-def apply_default_settings():
-    bpy.context.scene.render.engine = "CYCLES"
+def apply_default_settings(engine="EEVEE"):
+
+    engine = engine.upper()
+
+    if engine == "EEVEE":
+        engine = "BLENDER_EEVEE"
+
+    bpy.context.scene.render.engine = engine
     enable_all_rendering_devices()
-    bpy.context.scene.cycles.samples = 64
+
+    if engine == "CYCLES":
+        bpy.context.scene.cycles.samples = 32
+    if engine == "BLENDER_EEVEE":
+        bpy.context.scene.eevee.taa_render_samples = 32
 
     bpy.context.scene.render.image_settings.color_mode = "RGBA"
     bpy.context.scene.render.image_settings.color_depth = "8"
