@@ -127,15 +127,16 @@ def set_smooth_shading(particles, state):
 
 
 def make_rigid(particles, state=True):
+    if bpy.data.scenes['Scene'].rigidbody_world is None:
+        bpy.ops.rigidbody.world_add()
+
     particles = ensure_iterability(particles)
 
     for particle in particles:
-        select_only(particle)
-
         if state:
-            bpy.ops.rigidbody.object_add(type="ACTIVE")
+            bpy.data.scenes['Scene'].rigidbody_world.collection.objects.link(particle)
         else:
-            bpy.ops.rigidbody.objects_remove()
+            bpy.data.scenes['Scene'].rigidbody_world.collection.objects.unlink(particle)
 
 
 def relax_collisions(particles,
