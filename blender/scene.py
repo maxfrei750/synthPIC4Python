@@ -63,3 +63,10 @@ def apply_default_settings(engine="EEVEE"):
     bpy.context.scene.render.film_transparent = True
 
     bpy.context.scene.use_gravity = False
+
+
+def render_to_file(absolute_file_path):
+    previous_path = bpy.context.scene.render.filepath
+    bpy.context.scene.render.filepath = absolute_file_path
+    bpy.ops.render.render(write_still=True)
+    bpy.context.scene.render.filepath = previous_path
