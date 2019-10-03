@@ -74,13 +74,21 @@ def duplicate(particle, new_name):
     new_particle.data = new_particle.data.copy()
     new_particle.animation_data_clear()
     new_particle.name = new_name
-    bpy.context.scene.collection.objects.link(new_particle)
+    bpy.data.scenes["Scene"].collection.objects.link(new_particle)
 
     return new_particle
 
 
 def delete(particles):
     particles = ensure_iterability(particles)
+
+    # meshes_to_delete = list()
+    #
+    # for particle in particles:
+    #     meshes_to_delete.append(bpy.data.meshes[particle.name])
+    #
+    # bpy.ops.object.delete({"selected_objects": meshes_to_delete})
+
     bpy.ops.object.delete({"selected_objects": particles})
     blender.utilities.purge_unused_data()
 
@@ -129,42 +137,45 @@ def set_smooth_shading(particles, state):
 
 
 def make_rigid(particles, state=True):
-    if bpy.data.scenes['Scene'].rigidbody_world is None:
+    if bpy.data.scenes["Scene"].rigidbody_world is None:
         bpy.ops.rigidbody.world_add()
 
     particles = ensure_iterability(particles)
 
     for particle in particles:
         if state:
-            bpy.data.scenes['Scene'].rigidbody_world.collection.objects.link(particle)
+            bpy.data.scenes["Scene"].rigidbody_world.collection.objects.link(particle)
         else:
-            bpy.data.scenes['Scene'].rigidbody_world.collection.objects.unlink(particle)
+            bpy.data.scenes["Scene"].rigidbody_world.collection.objects.unlink(particle)
 
 
 def relax_collisions(particles,
                      damping,
                      collision_shape,
                      n_frames):
-    collision_shape = collision_shape.upper()
-    bpy.context.scene.use_gravity = False
 
-    if bpy.context.scene.rigidbody_world is None:
+    particles = ensure_iterability(particles)
+
+    collision_shape = collision_shape.upper()
+    bpy.data.scenes["Scene"].use_gravity = False
+
+    if bpy.data.scenes["Scene"].rigidbody_world is None:
         bpy.ops.rigidbody.world_add()
 
     bpy.context.scene.rigidbody_world.enabled = True
 
-    for particle in particles:
-        make_rigid(particle)
+    make_rigid(particles)
 
+    for particle in particles:
         particle.rigid_body.collision_shape = collision_shape
         particle.rigid_body.angular_damping = damping
         particle.rigid_body.linear_damping = damping
 
-    bpy.context.scene.frame_end = n_frames
-    bpy.context.scene.rigidbody_world.point_cache.frame_end = n_frames
+    bpy.data.scenes["Scene"].frame_end = n_frames
+    bpy.data.scenes["Scene"].rigidbody_world.point_cache.frame_end = n_frames
     bpy.ops.ptcache.free_bake_all()
     bpy.ops.ptcache.bake_all(bake=True)
-    bpy.context.scene.frame_set(n_frames)
+    bpy.data.scenes["Scene"].frame_set(n_frames)
 
 
 def place_randomly(particles,
