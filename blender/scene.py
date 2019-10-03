@@ -131,4 +131,9 @@ def render_object_masks(particles, image_id_string, absolute_output_directory):
             blender.particles.hide(particle)
 
 
+def create_diffuse_color_material(name, color):
+    material = (bpy.data.materials.get(name) or bpy.data.materials.new(name))
+    material.diffuse_color = color
+    return material
+
 
