@@ -2,6 +2,19 @@ import bpy
 import os
 
 
+class TemporaryState:
+    def __init__(self):
+        self.original_path = bpy.data.filepath
+        self.temporary_path = self.original_path + "_state_"+get_random_string()
+
+    def __enter__(self):
+        bpy.ops.wm.save_as_mainfile(filepath=self.temporary_path)
+
+    def __exit__(self, type, value, traceback):
+        bpy.ops.wm.open_mainfile(filepath=self.original_path)
+        os.remove(self.temporary_path)
+
+
 def set_background_color(color):
     if len(color) == 3:
         color += (1,)
@@ -71,31 +84,3 @@ def render_to_file(absolute_file_path):
     bpy.context.scene.render.filepath = absolute_file_path
     bpy.ops.render.render(write_still=True)
     bpy.context.scene.render.filepath = previous_path
-
-
-def reset_state():
-    assert bpy.data.filepath.endswith("_saved_state"), "Cannot reset state because there is no saved state."
-
-    bpy.ops.wm.open_mainfile(filepath=bpy.data.filepath)
-
-
-def save_state():
-    if not bpy.data.filepath.endswith("_saved_state"):
-        state_file_path = bpy.data.filepath + "_saved_state"
-    else:
-        state_file_path = bpy.data.filepath
-
-    bpy.ops.wm.save_as_mainfile(filepath=state_file_path)
-
-
-def clear_state():
-    if not bpy.data.filepath.endswith("_saved_state"):
-        state_file_path = bpy.data.filepath + "_saved_state"
-        original_file_path = bpy.data.filepath
-    else:
-        state_file_path = bpy.data.filepath
-        original_file_path = state_file_path[:-12]
-
-    bpy.ops.wm.open_mainfile(filepath=original_file_path)
-    os.remove(state_file_path)
-    os.remove(state_file_path+"1")
