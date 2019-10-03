@@ -1,5 +1,7 @@
 import bpy
 import os
+from utilities import get_random_string
+import blender.particles
 
 
 class TemporaryState:
@@ -84,3 +86,42 @@ def render_to_file(absolute_file_path):
     bpy.context.scene.render.filepath = absolute_file_path
     bpy.ops.render.render(write_still=True)
     bpy.context.scene.render.filepath = previous_path
+
+
+def render_object_masks(particles, image_id_string, absolute_output_directory):
+    particles = blender.particles.ensure_iterability(particles)
+
+    with TemporaryState():
+        # Set render settings.
+        bpy.context.scene.render.image_settings.compression = 15
+        bpy.context.scene.render.image_settings.color_mode = "BW"
+        bpy.context.scene.render.image_settings.color_depth = "8"
+        bpy.context.scene.render.use_compositing = False
+        bpy.context.scene.render.use_sequencer = False
+        bpy.context.scene.render.engine = "BLENDER_WORKBENCH"
+        bpy.context.scene.display.shading.light = "FLAT"
+        bpy.context.scene.render.film_transparent = False
+        bpy.context.scene.display.render_aa = "OFF"
+        bpy.context.scene.display_settings.display_device = "None"
+        bpy.context.scene.display.shading.color_type = "SINGLE"
+        bpy.context.scene.display.shading.single_color = (1, 1, 1)
+        bpy.context.scene.render.dither_intensity = 0
+
+        # Set black background.
+        bpy.context.scene.world.use_nodes = False
+        bpy.context.scene.world.color = (0, 0, 0)
+
+        # Hide all meshes.
+        for instance in bpy.data.objects:
+            if instance.type == "MESH":
+                instance.hide_render = True
+
+        # Unhide relevant particles one by one and render them.
+        for mask_id, particle in enumerate(particles):
+            blender.particles.hide(particle, False)
+
+            output_filename = image_id_string + "_mask{:06d}.png".format(mask_id)
+            output_file_path = os.path.join(absolute_output_directory, output_filename)
+            render_to_file(output_file_path)
+
+            blender.particles.hide(particle)
