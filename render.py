@@ -31,8 +31,7 @@ def render(scene_path, recipe_path):
     blender_executable_path = get_blender_executable_path()
 
     execute_and_print(
-        [blender_executable_path, scene_path, "--background", "--factory-startup", "--verbose", "0", "--python",
-         recipe_path])
+        [blender_executable_path, scene_path, "--background", "--factory-startup", "--python", recipe_path])
 
 
 def main(argv):
