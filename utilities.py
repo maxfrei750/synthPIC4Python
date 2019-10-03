@@ -16,7 +16,7 @@ def execute_and_print(cmd):
         print(line)
 
 
-class Timer(object):
+class Timer:
     def __init__(self, name=None):
         self.name = name
 
