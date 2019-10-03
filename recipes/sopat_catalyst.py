@@ -87,4 +87,5 @@ for image_id in range(n_images):
         blender.scene.render_to_file(image_file_path)
 
         mask_folder_path = os.path.join(output_folder_path_base, "masks")
-        blender.scene.render_object_masks(particles_light, image_id_string, mask_folder_path)
+        # blender.scene.render_object_masks(particles_light, image_id_string, mask_folder_path)
+        blender.scene.render_occlusion_masks(particles_light, image_id_string, mask_folder_path)
