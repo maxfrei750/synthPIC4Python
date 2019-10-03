@@ -1,5 +1,5 @@
 import subprocess
-
+import time
 
 def execute(cmd):
     popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
@@ -14,3 +14,16 @@ def execute(cmd):
 def execute_and_print(cmd):
     for line in execute(cmd):
         print(line)
+
+
+class Timer(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def __enter__(self):
+        self.tstart = time.time()
+
+    def __exit__(self, type, value, traceback):
+        if self.name:
+            print('[%s]' % self.name,)
+        print('Elapsed: %s' % (time.time() - self.tstart))
