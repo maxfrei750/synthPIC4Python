@@ -81,6 +81,24 @@ def apply_default_settings(engine="EEVEE"):
     bpy.context.scene.use_gravity = False
 
 
+def setup_workbench_renderer():
+    bpy.context.scene.render.image_settings.compression = 15
+    bpy.context.scene.render.image_settings.color_mode = "BW"
+    bpy.context.scene.render.image_settings.color_depth = "8"
+    bpy.context.scene.render.use_compositing = False
+    bpy.context.scene.render.use_sequencer = False
+    bpy.context.scene.render.engine = "BLENDER_WORKBENCH"
+    bpy.context.scene.display.shading.light = "FLAT"
+    bpy.context.scene.render.film_transparent = False
+    bpy.context.scene.display.render_aa = "OFF"
+    bpy.context.scene.display_settings.display_device = "None"
+    bpy.context.scene.render.dither_intensity = 0
+
+    # Set black background.
+    bpy.context.scene.world.use_nodes = False
+    bpy.context.scene.world.color = (0, 0, 0)
+
+
 def render_to_file(absolute_file_path):
     previous_path = bpy.context.scene.render.filepath
     bpy.context.scene.render.filepath = absolute_file_path
@@ -93,23 +111,9 @@ def render_object_masks(particles, image_id_string, absolute_output_directory):
 
     with TemporaryState():
         # Set render settings.
-        bpy.context.scene.render.image_settings.compression = 15
-        bpy.context.scene.render.image_settings.color_mode = "BW"
-        bpy.context.scene.render.image_settings.color_depth = "8"
-        bpy.context.scene.render.use_compositing = False
-        bpy.context.scene.render.use_sequencer = False
-        bpy.context.scene.render.engine = "BLENDER_WORKBENCH"
-        bpy.context.scene.display.shading.light = "FLAT"
-        bpy.context.scene.render.film_transparent = False
-        bpy.context.scene.display.render_aa = "OFF"
-        bpy.context.scene.display_settings.display_device = "None"
+        setup_workbench_renderer()
         bpy.context.scene.display.shading.color_type = "SINGLE"
         bpy.context.scene.display.shading.single_color = (1, 1, 1)
-        bpy.context.scene.render.dither_intensity = 0
-
-        # Set black background.
-        bpy.context.scene.world.use_nodes = False
-        bpy.context.scene.world.color = (0, 0, 0)
 
         # Hide all meshes.
         for instance in bpy.data.objects:
@@ -125,3 +129,6 @@ def render_object_masks(particles, image_id_string, absolute_output_directory):
             render_to_file(output_file_path)
 
             blender.particles.hide(particle)
+
+
+
