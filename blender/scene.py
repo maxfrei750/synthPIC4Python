@@ -137,3 +137,8 @@ def create_diffuse_color_material(name, color):
     return material
 
 
+def replace_material(instance, material):
+    instance.data.materials.clear()
+    instance.data.materials.append(material)
+
+
