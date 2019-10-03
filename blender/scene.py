@@ -142,3 +142,28 @@ def replace_material(instance, material):
     instance.data.materials.append(material)
 
 
+def render_occlusion_masks(particles, image_id_string, absolute_output_directory):
+    particles = blender.particles.ensure_iterability(particles)
+
+    with TemporaryState():
+        # Set render settings.
+        setup_workbench_renderer()
+        bpy.context.scene.display.shading.color_type = "MATERIAL"
+
+        material_white = create_diffuse_color_material("white_mask_material", (1, 1, 1, 1))
+        material_black = create_diffuse_color_material("black_mask_material", (0, 0, 0, 1))
+
+        # Replace textures of all meshes with black texture.
+        for instance in bpy.data.objects:
+            if instance.type == "MESH":
+                replace_material(instance, material_black)
+
+        # Change texture of particles to white texture one by one and render them.
+        for mask_id, particle in enumerate(particles):
+            replace_material(particle, material_white)
+
+            output_filename = image_id_string + "_mask{:06d}.png".format(mask_id)
+            output_file_path = os.path.join(absolute_output_directory, output_filename)
+            render_to_file(output_file_path)
+
+            replace_material(particle, material_black)
