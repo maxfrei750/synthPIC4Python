@@ -30,31 +30,6 @@ resolution = (1032, 825)
 blender.scene.set_resolution(resolution)
 
 
-def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
-    blender.particles.hide(primitive, False)
-
-    particles = list()
-
-    mu_particle_size = np.log(d_g)
-    sigma_particle_size = np.log(sigma_g)
-
-    for particle_id in range(n):
-        particle_name = name+"{:06d}".format(particle_id)
-        particle = blender.particles.duplicate(primitive, particle_name)
-
-        size = np.random.lognormal(mean=mu_particle_size, sigma=sigma_particle_size)
-        blender.particles.set_size(particle, size)
-
-        particles.append(particle)
-
-    blender.particles.hide(primitive)
-
-    return particles
-
-
-primitive_path_dark = os.path.join(root_dir, "primitives", "sopat_catalyst", "dark.blend")
-primitive_dark = blender.particles.load_primitive(primitive_path_dark)
-
 primitive_path_light = os.path.join(root_dir, "primitives", "sopat_catalyst", "light.blend")
 primitive_light = blender.particles.load_primitive(primitive_path_light)
 

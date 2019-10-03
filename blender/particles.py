@@ -179,3 +179,25 @@ def place_randomly(particles,
         if do_random_rotation:
             random_rotation = tuple(np.random.rand(3) * 2 * np.pi)
             particle.rotation_euler = random_rotation
+
+
+def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
+    blender.particles.hide(primitive, False)
+
+    particles = list()
+
+    mu_particle_size = np.log(d_g)
+    sigma_particle_size = np.log(sigma_g)
+
+    for particle_id in range(n):
+        particle_name = name+"{:06d}".format(particle_id)
+        particle = blender.particles.duplicate(primitive, particle_name)
+
+        size = np.random.lognormal(mean=mu_particle_size, sigma=sigma_particle_size)
+        blender.particles.set_size(particle, size)
+
+        particles.append(particle)
+
+    blender.particles.hide(primitive)
+
+    return particles
