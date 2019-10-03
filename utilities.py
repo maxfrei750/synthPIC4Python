@@ -1,5 +1,8 @@
 import subprocess
 import time
+import random
+import string
+
 
 def execute(cmd):
     popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
@@ -27,3 +30,9 @@ class Timer:
         if self.name:
             print('[%s]' % self.name,)
         print('Elapsed: %s' % (time.time() - self.tstart))
+
+
+def get_random_string(length=10):
+    """Generate a random string of letters and digits """
+    letters_and_digits = string.ascii_lowercase + string.digits
+    return ''.join(random.choice(letters_and_digits) for i in range(length))
