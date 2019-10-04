@@ -3,7 +3,7 @@
 import sys
 import getopt
 import os
-from setup_synthpic import get_blender_executable_path
+from setup_synthpic import get_blender_executable_path, download_blender, install_dependencies
 from utilities import execute_and_print
 
 
@@ -26,9 +26,23 @@ def render(scene_path, recipe_path):
 
     print("Rendering")
     print("Scene: {}".format(scene_path))
-    print("Recipe: {}".format(recipe_path))
+    print("Recipe: {}\n".format(recipe_path))
 
     blender_executable_path = get_blender_executable_path()
+
+    if not os.path.isfile(blender_executable_path):
+        print("Warning: Could not find blender in \n    {}\n".format(blender_executable_path))
+
+        while True:
+            answer = input("Do you want to download and set up blender automatically? [y/n]\n")
+
+            if answer == "y":
+                download_blender()
+                install_dependencies()
+                break
+            elif answer == "n":
+                print("Aborting.")
+                sys.exit()
 
     execute_and_print(
         [blender_executable_path, scene_path, "--background", "--factory-startup", "--python", recipe_path])
