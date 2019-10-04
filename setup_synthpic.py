@@ -127,15 +127,12 @@ def download_blender():
 
     print("Downloading Blender...")
     urllib.request.urlretrieve(url, archive_path)
-    print("Finished.")
 
     print("Extracting archive...")
     shutil.unpack_archive(archive_path, archive_folder)
-    print("Finished.")
 
     print("Deleting archive...")
     os.remove(archive_path)
-    print("Finished.")
 
 
 if __name__ == "__main__":
