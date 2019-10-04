@@ -87,25 +87,16 @@ def get_blender_python_executable_path():
 
 
 def install_dependencies():
-    blender_python_executable_path = get_blender_python_executable_path()
     blender_python_folder = get_blender_python_folder()
 
-    print("Setting up the python of blender.")
+    print("Remove python that comes along with Blender.")
+    if os.path.isdir(blender_python_folder):
+        shutil.rmtree(blender_python_folder)
 
-    print("Install and upgrade pip.")
-    execute_and_print([blender_python_executable_path, "-m", "ensurepip"])
-    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "-U", "pip"])
-
-    print("Fix numpy.")
-    execute_and_print([blender_python_executable_path, "-m", "pip", "uninstall", "--yes", "numpy"])
-    numpy_path = os.path.join(blender_python_folder, "lib", "site-packages", "numpy")
-    shutil.rmtree(numpy_path, ignore_errors=True)
-    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "--no-warn-script-location", "numpy"])
-
-    print("Install trimesh.")
-    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "trimesh"])
-
-    print("Successfully installed all dependencies.")
+    print("Install new python and the requirements via conda.")
+    environment_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "environment.yml")
+    execute_and_print(["conda", "env", "create", "--prefix", blender_python_folder, "--file", environment_file_path])
+    print("Successfully installed python and dependencies.")
 
 
 def download_blender():
