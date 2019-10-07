@@ -82,13 +82,6 @@ def duplicate(particle, new_name):
 def delete(particles):
     particles = ensure_iterability(particles)
 
-    # meshes_to_delete = list()
-    #
-    # for particle in particles:
-    #     meshes_to_delete.append(bpy.data.meshes[particle.name])
-    #
-    # bpy.ops.object.delete({"selected_objects": meshes_to_delete})
-
     bpy.ops.object.delete({"selected_objects": particles})
     blender.utilities.purge_unused_data()
 
@@ -97,24 +90,47 @@ def randomize_and_bake_shape(particles):
     particles = ensure_iterability(particles)
 
     for particle in particles:
-        previous_location = tuple(particle.location)
+        if is_hair(particle):
+            particle.particle_systems[0].seed = random.randint(0, 1e10)
+            particle.particle_systems[0].child_seed = random.randint(0, 1e10)
+        else:
+            previous_location = tuple(particle.location)
 
-        range_limit = 1000
+            range_limit = 1e10
 
-        x = random.randint(0, range_limit)
-        y = random.randint(0, range_limit)
-        z = random.randint(0, range_limit)
+            x = random.randint(0, range_limit)
+            y = random.randint(0, range_limit)
+            z = random.randint(0, range_limit)
 
-        print((x, y, z))
+            print((x, y, z))
 
-        # Move particle to randomize global noises.
-        particle.location = (x, y, z)
-        select_only(particle)
-        bpy.context.view_layer.objects.active = particle
-        bpy.ops.object.convert(target="MESH")
+            # Move particle to randomize global noises.
+            particle.location = (x, y, z)
+            select_only(particle)
+            bpy.context.view_layer.objects.active = particle
+            bpy.ops.object.convert(target="MESH")
 
-        # Reset location.
-        particle.location = previous_location
+            # Reset location.
+            particle.location = previous_location
+
+
+def is_hair(particle):
+    if not particle.particle_systems:  # Check if the particle has a blender particle system associated with it.
+        return False
+    else:  # If yes, then check whether it is of type hair.
+        return particle.particle_systems[0].settings.type == "HAIR"
+
+
+def set_size_hair(particles, length, root_radius, tip_radius):
+    particles = ensure_iterability(particles)
+
+    for particle in particles:
+
+        assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
+
+        particle.particle_systems[0].settings.hair_length = length
+        particle.particle_systems[0].settings.root_radius = root_radius
+        particle.particle_systems[0].settings.tip_radius = tip_radius
 
 
 def set_size(particles, target_size_xyz):
@@ -124,6 +140,9 @@ def set_size(particles, target_size_xyz):
         target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
 
     for particle in particles:
+
+        assert not is_hair(particle), "Please use the set_size_hair method for the sizing of hair objects."
+
         scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
         particle.scale = scale_xyz
 
