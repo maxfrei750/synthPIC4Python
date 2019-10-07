@@ -68,7 +68,7 @@ def apply_default_settings(engine="EEVEE"):
     enable_all_rendering_devices()
 
     if engine == "CYCLES":
-        bpy.context.scene.cycles.samples = 32
+        bpy.context.scene.cycles.samples = 16
     if engine == "BLENDER_EEVEE":
         bpy.context.scene.eevee.taa_render_samples = 32
 
