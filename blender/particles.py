@@ -3,6 +3,7 @@ import numpy as np
 import bpy
 import random
 import blender.utilities
+import os
 
 
 def is_iterable(obj):
@@ -52,6 +53,10 @@ def hide(particles, state=True):
 
 
 def load_primitive(blend_file):
+    blend_file = os.path.abspath(blend_file)
+
+    assert os.path.isfile(blend_file), "Could not find file: " + blend_file
+
     section = "\\Object\\"
     blender_object = "primitive"
 
@@ -125,7 +130,6 @@ def set_size_hair(particles, length, root_radius, tip_radius):
     particles = ensure_iterability(particles)
 
     for particle in particles:
-
         assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
 
         particle.particle_systems[0].settings.hair_length = length
@@ -140,7 +144,6 @@ def set_size(particles, target_size_xyz):
         target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
 
     for particle in particles:
-
         assert not is_hair(particle), "Please use the set_size_hair method for the sizing of hair objects."
 
         scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
@@ -172,7 +175,6 @@ def relax_collisions(particles,
                      damping,
                      collision_shape,
                      n_frames):
-
     particles = ensure_iterability(particles)
 
     collision_shape = collision_shape.upper()
@@ -220,7 +222,7 @@ def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
     sigma_particle_size = np.log(sigma_g)
 
     for particle_id in range(n):
-        particle_name = name+"{:06d}".format(particle_id)
+        particle_name = name + "{:06d}".format(particle_id)
         particle = blender.particles.duplicate(primitive, particle_name)
 
         size = np.random.lognormal(mean=mu_particle_size, sigma=sigma_particle_size)
