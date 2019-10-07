@@ -7,7 +7,7 @@ import blender.particles
 class TemporaryState:
     def __init__(self):
         self.original_path = bpy.data.filepath
-        self.temporary_path = self.original_path + "_state_"+get_random_string()
+        self.temporary_path = self.original_path + "_state_" + get_random_string()
 
     def __enter__(self):
         bpy.ops.wm.save_as_mainfile(filepath=self.temporary_path)
@@ -58,7 +58,6 @@ def enable_all_rendering_devices():
 
 
 def apply_default_settings(engine="EEVEE"):
-
     engine = engine.upper()
 
     if engine == "EEVEE":
@@ -106,8 +105,24 @@ def render_to_file(absolute_file_path):
     bpy.context.scene.render.filepath = previous_path
 
 
+def save_annotation_file(annotation_file_path, particles, do_append=False):
+    particles = blender.particles.ensure_iterability(particles)
+
+    if os.path.isfile(annotation_file_path) and not do_append:
+        os.remove(annotation_file_path)
+
+    with open(annotation_file_path, "a") as annotation_file:
+        for particle in particles:
+            assert "class" in particle, "You need to assign the class attribute of the particles before saving " \
+                                        "annotations:\nExample: particle['class'] = 'test'"
+            annotation_file.write(particle["class"] + "\n")
+
+
 def render_object_masks(particles, image_id_string, absolute_output_directory):
     particles = blender.particles.ensure_iterability(particles)
+
+    annotation_file_path = os.path.join(absolute_output_directory, "..", "annotations.txt")
+    save_annotation_file(annotation_file_path, particles)
 
     with TemporaryState():
         # Set render settings.
@@ -144,6 +159,9 @@ def replace_material(instance, material):
 
 def render_occlusion_masks(particles, image_id_string, absolute_output_directory):
     particles = blender.particles.ensure_iterability(particles)
+
+    annotation_file_path = os.path.join(absolute_output_directory, "..", "annotations.txt")
+    save_annotation_file(annotation_file_path, particles)
 
     with TemporaryState():
         # Set render settings.
