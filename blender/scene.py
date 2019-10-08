@@ -2,6 +2,8 @@ import bpy
 import os
 from utilities import get_random_string
 import blender.particles
+import tempfile
+from PIL import Image
 
 
 class TemporaryState:
@@ -103,6 +105,15 @@ def render_to_file(absolute_file_path):
     bpy.context.scene.render.filepath = absolute_file_path
     bpy.ops.render.render(write_still=True)
     bpy.context.scene.render.filepath = previous_path
+
+
+def render_to_variable():
+    temp_file_name = get_random_string() + ".png"
+    temp_file_path = os.path.join(tempfile.gettempdir(), temp_file_name)
+    render_to_file(temp_file_path)
+    image = Image.open(temp_file_path)
+
+    return image
 
 
 def save_annotation_file(annotation_file_path, particles, do_append=False):
