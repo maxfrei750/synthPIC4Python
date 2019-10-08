@@ -94,8 +94,20 @@ def install_dependencies():
         shutil.rmtree(blender_python_folder)
 
     print("Install new python and the requirements via conda.")
-    environment_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "environment.yml")
-    execute_and_print(["conda", "env", "create", "--prefix", blender_python_folder, "--file", environment_file_path])
+
+    try:
+        conda_copy_always_previous_value = os.environ["CONDA_COPY_ALWAYS"]
+    except KeyError:
+        conda_copy_always_previous_value = "0"
+
+    os.environ["CONDA_COPY_ALWAYS"] = "1"
+
+    try:
+        environment_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "environment.yml")
+        execute_and_print(["conda", "env", "create", "--prefix", blender_python_folder, "--file", environment_file_path])
+    finally:
+        os.environ["CONDA_COPY_ALWAYS"] = conda_copy_always_previous_value
+
     print("Successfully installed python and dependencies.")
 
 
