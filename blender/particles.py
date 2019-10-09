@@ -100,8 +100,8 @@ def randomize_shape(particles):
 
     for particle in particles:
         if is_hair(particle):
-            particle.particle_systems[0].seed = random.randint(0, 1e10)
-            particle.particle_systems[0].child_seed = random.randint(0, 1e10)
+            particle.particle_systems[0].seed = random.randint(0, 2147483647)
+            particle.particle_systems[0].child_seed = random.randint(0, 2147483647)
         else:
             previous_location = tuple(particle.location)
 
