@@ -228,7 +228,7 @@ def place_randomly(particles,
 
 
 def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
-    blender.particles.hide(primitive, False)
+    hide(primitive, False)
 
     particles = list()
 
@@ -237,13 +237,15 @@ def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
 
     for particle_id in range(n):
         particle_name = name + "{:06d}".format(particle_id)
-        particle = blender.particles.duplicate(primitive, particle_name)
+        particle = duplicate(primitive, particle_name)
+
+        randomize_shape(particle)
 
         size = np.random.lognormal(mean=mu_particle_size, sigma=sigma_particle_size)
-        blender.particles.set_size(particle, size)
+        set_size(particle, size)
 
         particles.append(particle)
 
-    blender.particles.hide(primitive)
+    hide(primitive)
 
     return particles
