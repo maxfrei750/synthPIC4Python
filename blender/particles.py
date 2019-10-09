@@ -76,9 +76,13 @@ def load_primitive(blend_file):
 
 def duplicate(particle, new_name):
     new_particle = particle.copy()
-    new_particle.data = new_particle.data.copy()
+    new_particle.data = particle.data.copy()
     new_particle.animation_data_clear()
     new_particle.name = new_name
+
+    for i, particle_system in enumerate(particle.particle_systems):
+        new_particle.particle_systems[i].settings = particle_system.settings.copy()
+
     bpy.data.scenes["Scene"].collection.objects.link(new_particle)
 
     return new_particle
