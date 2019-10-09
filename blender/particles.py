@@ -95,7 +95,7 @@ def delete(particles):
     blender.utilities.purge_unused_data()
 
 
-def randomize_and_bake_shape(particles):
+def randomize_shape(particles):
     particles = ensure_iterability(particles)
 
     for particle in particles:
@@ -110,8 +110,6 @@ def randomize_and_bake_shape(particles):
             x = random.randint(0, range_limit)
             y = random.randint(0, range_limit)
             z = random.randint(0, range_limit)
-
-            print((x, y, z))
 
             # Move particle to randomize global noises.
             particle.location = (x, y, z)
