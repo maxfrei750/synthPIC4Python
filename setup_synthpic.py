@@ -87,26 +87,15 @@ def get_blender_python_executable_path():
 
 
 def install_dependencies():
-    blender_python_folder = get_blender_python_folder()
+    blender_python_executable_path = get_blender_python_executable_path()
+    requirement_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "requirements.txt")
 
-    print("Remove python that comes along with Blender.")
-    if os.path.isdir(blender_python_folder):
-        shutil.rmtree(blender_python_folder)
+    print("Install dependencies.")
 
-    print("Install new python and the requirements via conda.")
-
-    try:
-        conda_copy_always_previous_value = os.environ["CONDA_COPY_ALWAYS"]
-    except KeyError:
-        conda_copy_always_previous_value = "0"
-
-    os.environ["CONDA_COPY_ALWAYS"] = "1"
-
-    try:
-        environment_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "environment.yml")
-        execute_and_print(["conda", "env", "create", "--prefix", blender_python_folder, "--file", environment_file_path])
-    finally:
-        os.environ["CONDA_COPY_ALWAYS"] = conda_copy_always_previous_value
+    execute_and_print([blender_python_executable_path, "-m", "ensurepip"])
+    execute_and_print(
+        [blender_python_executable_path, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"])
+    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "--requirement", requirement_file_path])
 
     print("Successfully installed python and dependencies.")
 
