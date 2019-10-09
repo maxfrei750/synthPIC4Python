@@ -142,13 +142,22 @@ def set_hair_radius(particles, root_radius, tip_radius=None):
         particle.particle_systems[0].settings.tip_radius = tip_radius
 
 
-def set_hair_random_length(particles):
+def set_random_hair_length_factor(particles):
     particles = ensure_iterability(particles)
 
     for particle in particles:
         assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
 
         particle.particle_systems[0].settings.child_length = random.random()
+
+
+def set_hair_length_factor(particles, length_factor):
+    particles = ensure_iterability(particles)
+
+    for particle in particles:
+        assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
+
+        particle.particle_systems[0].settings.child_length = length_factor
 
 
 def set_size(particles, target_size_xyz):
