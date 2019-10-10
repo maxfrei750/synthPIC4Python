@@ -18,8 +18,7 @@ import blender.scene
 from utilities import generate_gaussian_noise_image
 
 primitive_path = os.path.join(root_dir, "primitives", "carbon_nano_tubes_sem", "fiber.blend")
-n_images = 10
-
+n_images = 1000
 
 def create_fiber_fraction(primitive):
     blender.particles.hide(primitive, False)
@@ -27,18 +26,20 @@ def create_fiber_fraction(primitive):
     class_name = "fiber"
     particles = list()
 
-    number = random.randint(1, 10)
-
-    radius = random.uniform(5, 15)
-    length = random.uniform(100, 1000)
+    number = random.randint(1, 5)
 
     for particle_id in range(number):
         particle_name = class_name + "{:06d}".format(particle_id)
         particle = blender.particles.duplicate(primitive, particle_name)
 
-        blender.particles.set_size_hair(particle, length=length, root_radius=radius, tip_radius=radius)
+        radius = random.uniform(3, 42)
 
-        # Create a custom attribute class. This attribute is used in the function blender.scene.save_annotation_file.
+        hair_length_factor = random.uniform(0.3, 1)
+        blender.particles.set_hair_length_factor(particle, hair_length_factor)
+        blender.particles.set_hair_radius(particle, radius)
+        blender.particles.randomize_shape(particle)
+
+        # Create a custom attribute "class". This attribute is used in the function blender.scene.save_annotation_file.
         particle["class"] = class_name
 
         particles.append(particle)
@@ -116,8 +117,8 @@ for image_id in range(n_images):
         final_image = final_image.convert("L")
         final_image.save(image_file_path)
 
-        # Optional: Show image.
-        final_image.show()
+        # # Optional: Show image.
+        # final_image.show()
 
         # Render and save masks.
         mask_folder_path = os.path.join(output_folder_path_base, "masks")
