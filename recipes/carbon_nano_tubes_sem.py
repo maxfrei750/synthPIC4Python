@@ -99,9 +99,9 @@ for image_id in range(n_images):
         final_image = PIL.Image.alpha_composite(final_image, particle_layer)
         final_image = PIL.Image.blend(final_image, noise_layer, 0.2)
 
-        # Adjust the contrast and brightness of the final image.
-        final_image = PIL.ImageEnhance.Contrast(final_image).enhance(1)
-        final_image = PIL.ImageEnhance.Brightness(final_image).enhance(1.18)
+        # # Adjust the contrast and brightness of the final image.
+        # final_image = PIL.ImageEnhance.Contrast(final_image).enhance(1)
+        # final_image = PIL.ImageEnhance.Brightness(final_image).enhance(1.18)
 
         # Save image.
         image_id_string = "image{:06d}".format(image_id)
