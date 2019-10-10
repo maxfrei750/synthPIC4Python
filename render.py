@@ -4,7 +4,7 @@ import sys
 import getopt
 import os
 from setup_synthpic import get_blender_executable_path, download_blender, install_dependencies
-from utilities import execute_and_print
+from system_utilities import execute_and_print
 
 
 def print_help():
@@ -45,7 +45,7 @@ def render(scene_path, recipe_path):
                 sys.exit()
 
     execute_and_print(
-        [blender_executable_path, scene_path, "--background", "--factory-startup", "--python", recipe_path])
+        [blender_executable_path, "-noaudio", scene_path, "--background", "--factory-startup", "--python", recipe_path])
 
 
 def main(argv):

@@ -2,7 +2,7 @@ import os
 import urllib.request
 import shutil
 import platform
-from utilities import execute_and_print
+from system_utilities import execute_and_print
 
 
 def is_os_64bit():

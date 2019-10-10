@@ -15,7 +15,7 @@ if root_dir not in sys.path:
 import blender.particles
 import blender.scene
 
-from utilities import generate_gaussian_noise_image
+from recipe_utilities import generate_gaussian_noise_image
 
 primitive_path = os.path.join(root_dir, "primitives", "carbon_nano_tubes_sem", "fiber.blend")
 n_images = 1000

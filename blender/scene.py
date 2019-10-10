@@ -1,6 +1,6 @@
 import bpy
 import os
-from utilities import get_random_string
+from recipe_utilities import get_random_string
 import blender.particles
 import tempfile
 from PIL import Image

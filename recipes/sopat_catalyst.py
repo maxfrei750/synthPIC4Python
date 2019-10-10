@@ -15,7 +15,7 @@ if root_dir not in sys.path:
 import blender.particles
 import blender.scene
 
-from utilities import Timer
+from recipe_utilities import Timer
 
 # # Force reload in case you edit the source after you first start the blender session.
 # import importlib
