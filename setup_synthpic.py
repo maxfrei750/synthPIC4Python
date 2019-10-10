@@ -95,6 +95,10 @@ def install_dependencies():
     execute_and_print([blender_python_executable_path, "-m", "ensurepip"])
     execute_and_print(
         [blender_python_executable_path, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"])
+
+    numpy_folder = os.path.join(get_blender_python_folder(), "lib", "python3.7", "site-packages", "numpy")
+    shutil.rmtree(numpy_folder) 
+
     execute_and_print([blender_python_executable_path, "-m", "pip", "install", "--requirement", requirement_file_path])
 
     print("Successfully installed python and dependencies.")
