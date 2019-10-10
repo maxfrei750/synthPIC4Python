@@ -87,6 +87,8 @@ def get_blender_python_executable_path():
 
 
 def install_dependencies():
+    os_name = get_os_name()
+
     blender_python_executable_path = get_blender_python_executable_path()
     requirement_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "requirements.txt")
 
@@ -96,10 +98,12 @@ def install_dependencies():
     execute_and_print(
         [blender_python_executable_path, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"])
 
-    numpy_folder = os.path.join(get_blender_python_folder(), "lib", "python3.7", "site-packages", "numpy")
-    shutil.rmtree(numpy_folder) 
+    if os_name == "linux":
+        numpy_folder = os.path.join(get_blender_python_folder(), "lib", "python3.7", "site-packages", "numpy")
+        shutil.rmtree(numpy_folder)
 
-    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "--requirement", requirement_file_path])
+    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "--requirement", requirement_file_path,
+                       "--no-warn-script-location"])
 
     print("Successfully installed python and dependencies.")
 
