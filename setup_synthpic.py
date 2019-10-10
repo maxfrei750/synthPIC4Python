@@ -81,7 +81,7 @@ def get_blender_python_executable_path():
     if os_name == "windows":
         python_filename = "python.exe"
     elif os_name == "linux":
-        python_filename = "python"
+        python_filename = "python3.7m"
 
     return os.path.join(blender_python_folder, "bin", python_filename)
 
