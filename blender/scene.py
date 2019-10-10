@@ -119,10 +119,12 @@ def render_to_variable():
 def save_annotation_file(annotation_file_path, particles, do_append=False):
     particles = blender.particles.ensure_iterability(particles)
 
+    os.makedirs(os.path.dirname(annotation_file_path), exist_ok=True)
+
     if os.path.isfile(annotation_file_path) and not do_append:
         os.remove(annotation_file_path)
 
-    with open(annotation_file_path, "a") as annotation_file:
+    with open(annotation_file_path, "a+") as annotation_file:
         for particle in particles:
             assert "class" in particle, "You need to assign the class attribute of the particles before saving " \
                                         "annotations:\nExample: particle['class'] = 'test'"
