@@ -1,1 +1,0 @@
-blender.exe blank.blend --background --factory-startup --render-output //output --python test_blender.py
