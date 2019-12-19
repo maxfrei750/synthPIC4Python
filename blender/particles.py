@@ -236,7 +236,7 @@ def place_randomly(particles,
             particle.rotation_euler = random_rotation
 
 
-def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
+def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g, particle_class="particle"):
     hide(primitive, False)
 
     particles = list()
@@ -247,6 +247,7 @@ def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g):
     for particle_id in range(n):
         particle_name = name + "{:06d}".format(particle_id)
         particle = duplicate(primitive, particle_name)
+        particle["class"] = particle_class
 
         randomize_shape(particle)
 
