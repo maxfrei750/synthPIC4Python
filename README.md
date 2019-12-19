@@ -36,13 +36,13 @@ When using synthPIC, we need to supply three types of resources:
 3. One or more .blend files (see e.g. `./primitives/sopat_catalyst/dark.blend`), each of which must contain exactly one object called *primitive*. These primitives can be loaded into Blender via the recipe to be placed into the scene and rendered. These files can be created most comfortably in Blender.
 
 To render images, a recipe and a scene file are passed to the script `render.py`:  
-`render.py --recipe ./recipes/sopat_catalyst.py --scene ./scenes/sopat_catalyst.blend` 
+e.g. `python render.py --recipe ./recipes/sopat_catalyst.py --scene ./scenes/sopat_catalyst.blend` 
 
 The rendering script then loads the supplied scene in Blender and executes the commands of the recipe, such as the loading, randomization and placement of primitives, in Blender's own custom python environment. 
 
 ## Getting started
-A good starting point is the example recipe `./recipes/sopat_catalyst.py` with the accompanying scene file `./scenes/sopat_catalyst.blend` and the primitives `./primitives/sopat_catalyst/dark.blend` and `./primitives/sopat_catalyst/light.blend`.
-
+A good starting point is the example recipe `./recipes/sopat_catalyst.py` with the accompanying scene file `./scenes/sopat_catalyst.blend` and the primitives `./primitives/sopat_catalyst/dark.blend` and `./primitives/sopat_catalyst/light.blend`. Run it by executing the following command:  
+`python render.py --recipe ./recipes/sopat_catalyst.py --scene ./scenes/sopat_catalyst.blend` 
 ## Known limitations
 * Only the rather slow cycles renderer works on headless servers at the moment. 
 This also affects the rendering of masks, which uses the very quick Workbench renderer.
