@@ -1,7 +1,6 @@
 import bpy
 import os
 import sys
-import numpy as np
 import random
 
 C = bpy.context
@@ -47,14 +46,14 @@ for image_id in range(n_images):
         n = 200
         d_g = 50
         sigma_g = 1.6
-        particles_dark = blender.particles.generate_lognormal_fraction(primitive_dark, name, n, d_g, sigma_g)
+        particles_dark = blender.particles.generate_lognormal_fraction(primitive_dark, name, n, d_g, sigma_g, particle_class="dark")
 
         # Create fraction 2: light particles
         name = "light"
         n = 25
         d_g = 50
         sigma_g = 1.6
-        particles_light = blender.particles.generate_lognormal_fraction(primitive_light, name, n, d_g, sigma_g)
+        particles_light = blender.particles.generate_lognormal_fraction(primitive_light, name, n, d_g, sigma_g, particle_class="light")
 
         # Combine fractions.
         particles = particles_dark+particles_light
