@@ -1,4 +1,6 @@
-[![License](https://img.shields.io/github/license/maxfrei750/synthPIC4Python.svg)](https://github.com/maxfrei750/synthPIC4Python/blob/master/LICENSE) 
+[![License](https://img.shields.io/github/license/maxfrei750/default_license.svg)](https://github.com/maxfrei750/synthPIC4Matlab/blob/master/LICENSE) 
+[![GitHub](https://img.shields.io/badge/mirror-GitHub-3D76C2.svg)](https://github.com/maxfrei750/synthPIC4Python)
+[![GitLab](https://img.shields.io/badge/mirror-GitLab-6C488A.svg)](https://git.uni-due.de/sfmafrei/synthPIC4Python)
 
 ![Logo](./assets/logo.png)
 
