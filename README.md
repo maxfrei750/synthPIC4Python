@@ -11,7 +11,7 @@ In principle, synthPIC4Python is simply a set of scripts, .blend-files and conce
 
 
 ## Table of Contents
-   * [SynthPIC4Matlab](#synthpic4matlab)
+   * [SynthPIC4Python](#synthpic4python)
    * [Table of Contents](#table-of-contents)
    * [Workflow](#Workflow)
    * [Setup](#setup)
