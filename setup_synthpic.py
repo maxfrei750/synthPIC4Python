@@ -1,7 +1,8 @@
 import os
-import urllib.request
-import shutil
 import platform
+import shutil
+import urllib.request
+
 from system_utilities import execute_and_print
 
 
@@ -22,7 +23,9 @@ def get_os_name():
     elif os.name == "posix":  # Linux
         return "linux"
     else:
-        raise OSError("Unsupported operating system. Only Windows and Linux are supported.")
+        raise OSError(
+            "Unsupported operating system. Only Windows and Linux are supported."
+        )
 
 
 def get_blender_version_number_string():
@@ -42,9 +45,16 @@ def get_blender_version_string():
         if os_architecture == "32":
             blender_version_suffix = os_name + "-glibc224-i686"
         elif os_architecture == "64":
-            blender_version_suffix = os_name + "-glibc217-x86_" + os_architecture
+            blender_version_suffix = (
+                os_name + "-glibc217-x86_" + os_architecture
+            )
 
-    return blender_version_base + blender_version_number + "-" + blender_version_suffix
+    return (
+        blender_version_base
+        + blender_version_number
+        + "-"
+        + blender_version_suffix
+    )
 
 
 def get_external_module_folder():
@@ -62,7 +72,9 @@ def get_blender_executable_path():
     elif os_name == "linux":
         blender_filename = "blender"
 
-    return os.path.join(blender_path_base, blender_version_string, blender_filename)
+    return os.path.join(
+        blender_path_base, blender_version_string, blender_filename
+    )
 
 
 def get_blender_python_folder():
@@ -70,7 +82,12 @@ def get_blender_python_folder():
     blender_version_string = get_blender_version_string()
     blender_version_number_string = get_blender_version_number_string()
 
-    return os.path.join(external_module_folder, blender_version_string, blender_version_number_string, "python")
+    return os.path.join(
+        external_module_folder,
+        blender_version_string,
+        blender_version_number_string,
+        "python",
+    )
 
 
 def get_blender_python_executable_path():
@@ -90,23 +107,52 @@ def install_dependencies():
     os_name = get_os_name()
 
     blender_python_executable_path = get_blender_python_executable_path()
-    requirement_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "requirements.txt")
+    requirement_file_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "requirements.txt"
+    )
 
     print("Install dependencies.")
 
     execute_and_print([blender_python_executable_path, "-m", "ensurepip"])
     execute_and_print(
-        [blender_python_executable_path, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"])
+        [
+            blender_python_executable_path,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "pip",
+            "setuptools",
+            "wheel",
+        ]
+    )
 
     if os_name == "linux":
-        numpy_folder = os.path.join(get_blender_python_folder(), "lib", "python3.7", "site-packages", "numpy")
+        numpy_folder = os.path.join(
+            get_blender_python_folder(),
+            "lib",
+            "python3.7",
+            "site-packages",
+            "numpy",
+        )
     elif os_name == "windows":
-        numpy_folder = os.path.join(get_blender_python_folder(), "lib", "site-packages", "numpy")
+        numpy_folder = os.path.join(
+            get_blender_python_folder(), "lib", "site-packages", "numpy"
+        )
 
     shutil.rmtree(numpy_folder)
 
-    execute_and_print([blender_python_executable_path, "-m", "pip", "install", "--requirement", requirement_file_path,
-                       "--no-warn-script-location"])
+    execute_and_print(
+        [
+            blender_python_executable_path,
+            "-m",
+            "pip",
+            "install",
+            "--requirement",
+            requirement_file_path,
+            "--no-warn-script-location",
+        ]
+    )
 
     print("Successfully installed python and dependencies.")
 
@@ -121,12 +167,18 @@ def download_blender():
     elif os_name == "linux":
         archive_extension = ".tar.bz2"
 
-    url_base = "https://ftp.halifax.rwth-aachen.de/blender/release/Blender" + blender_version_number_string + "/"
+    url_base = (
+        "https://ftp.halifax.rwth-aachen.de/blender/release/Blender"
+        + blender_version_number_string
+        + "/"
+    )
 
     url = url_base + blender_version_string + archive_extension
 
     archive_folder = get_external_module_folder()
-    archive_path = os.path.join(archive_folder, blender_version_string + archive_extension)
+    archive_path = os.path.join(
+        archive_folder, blender_version_string + archive_extension
+    )
 
     print("Downloading Blender...")
     urllib.request.urlretrieve(url, archive_path)

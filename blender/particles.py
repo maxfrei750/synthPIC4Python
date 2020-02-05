@@ -1,9 +1,10 @@
-import trimesh
-import numpy as np
-import bpy
-import random
-import blender.utilities
 import os
+import random
+
+import blender.utilities
+import bpy
+import numpy as np
+import trimesh
 
 
 def is_iterable(obj):
@@ -38,7 +39,11 @@ def create_raw_dummy_mesh():
     np.random.seed(1)
     deformation_strength = 0.5
     n_vertices = len(mesh_raw.vertices)
-    vertex_offsets = mesh_raw.vertex_normals * np.random.randn(n_vertices, 1) * deformation_strength
+    vertex_offsets = (
+        mesh_raw.vertex_normals
+        * np.random.randn(n_vertices, 1)
+        * deformation_strength
+    )
     mesh_raw.vertices += vertex_offsets
 
     return mesh_raw
@@ -65,9 +70,8 @@ def load_primitive(blend_file):
     filename = blender_object
 
     bpy.ops.wm.append(
-        filepath=filepath,
-        filename=filename,
-        directory=directory)
+        filepath=filepath, filename=filename, directory=directory
+    )
 
     primitive = bpy.data.objects[-1]
 
@@ -81,7 +85,9 @@ def duplicate(particle, new_name):
     new_particle.name = new_name
 
     for i, particle_system in enumerate(particle.particle_systems):
-        new_particle.particle_systems[i].settings = particle_system.settings.copy()
+        new_particle.particle_systems[
+            i
+        ].settings = particle_system.settings.copy()
 
     bpy.data.scenes["Scene"].collection.objects.link(new_particle)
 
@@ -101,7 +107,9 @@ def randomize_shape(particles):
     for particle in particles:
         if is_hair(particle):
             particle.particle_systems[0].seed = random.randint(0, 2147483647)
-            particle.particle_systems[0].child_seed = random.randint(0, 2147483647)
+            particle.particle_systems[0].child_seed = random.randint(
+                0, 2147483647
+            )
         else:
             previous_location = tuple(particle.location)
 
@@ -122,7 +130,9 @@ def randomize_shape(particles):
 
 
 def is_hair(particle):
-    if not particle.particle_systems:  # Check if the particle has a blender particle system associated with it.
+    if (
+        not particle.particle_systems
+    ):  # Check if the particle has a blender particle system associated with it.
         return False
     else:  # If yes, then check whether it is of type hair.
         return particle.particle_systems[0].settings.type == "HAIR"
@@ -135,7 +145,9 @@ def set_hair_radius(particles, root_radius, tip_radius=None):
         tip_radius = root_radius
 
     for particle in particles:
-        assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
+        assert is_hair(
+            particle
+        ), "Please use the set_size method for the sizing of non-hair objects."
 
         particle.particle_systems[0].settings.radius_scale = 1
         particle.particle_systems[0].settings.root_radius = root_radius
@@ -146,7 +158,9 @@ def set_random_hair_length_factor(particles):
     particles = ensure_iterability(particles)
 
     for particle in particles:
-        assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
+        assert is_hair(
+            particle
+        ), "Please use the set_size method for the sizing of non-hair objects."
 
         particle.particle_systems[0].settings.child_length = random.random()
 
@@ -155,7 +169,9 @@ def set_hair_length_factor(particles, length_factor):
     particles = ensure_iterability(particles)
 
     for particle in particles:
-        assert is_hair(particle), "Please use the set_size method for the sizing of non-hair objects."
+        assert is_hair(
+            particle
+        ), "Please use the set_size method for the sizing of non-hair objects."
 
         particle.particle_systems[0].settings.child_length = length_factor
 
@@ -167,9 +183,13 @@ def set_size(particles, target_size_xyz):
         target_size_xyz = (target_size_xyz, target_size_xyz, target_size_xyz)
 
     for particle in particles:
-        assert not is_hair(particle), "Please use the set_size_hair method for the sizing of hair objects."
+        assert not is_hair(
+            particle
+        ), "Please use the set_size_hair method for the sizing of hair objects."
 
-        scale_xyz = tuple(a / b for a, b in zip(target_size_xyz, particle.dimensions))
+        scale_xyz = tuple(
+            a / b for a, b in zip(target_size_xyz, particle.dimensions)
+        )
         particle.scale = scale_xyz
 
 
@@ -189,15 +209,16 @@ def make_rigid(particles, state=True):
 
     for particle in particles:
         if state:
-            bpy.data.scenes["Scene"].rigidbody_world.collection.objects.link(particle)
+            bpy.data.scenes["Scene"].rigidbody_world.collection.objects.link(
+                particle
+            )
         else:
-            bpy.data.scenes["Scene"].rigidbody_world.collection.objects.unlink(particle)
+            bpy.data.scenes["Scene"].rigidbody_world.collection.objects.unlink(
+                particle
+            )
 
 
-def relax_collisions(particles,
-                     damping,
-                     collision_shape,
-                     n_frames):
+def relax_collisions(particles, damping, collision_shape, n_frames):
     particles = ensure_iterability(particles)
 
     collision_shape = collision_shape.upper()
@@ -222,13 +243,18 @@ def relax_collisions(particles,
     bpy.data.scenes["Scene"].frame_set(n_frames)
 
 
-def place_randomly(particles,
-                   lower_space_boundaries_xyz,
-                   upper_space_boundaries_xyz,
-                   do_random_rotation=False):
+def place_randomly(
+    particles,
+    lower_space_boundaries_xyz,
+    upper_space_boundaries_xyz,
+    do_random_rotation=False,
+):
     for particle in particles:
-        random_location = tuple(np.random.randint(low=lower_space_boundaries_xyz,
-                                                  high=upper_space_boundaries_xyz))
+        random_location = tuple(
+            np.random.randint(
+                low=lower_space_boundaries_xyz, high=upper_space_boundaries_xyz
+            )
+        )
         particle.location = random_location
 
         if do_random_rotation:
@@ -236,7 +262,9 @@ def place_randomly(particles,
             particle.rotation_euler = random_rotation
 
 
-def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g, particle_class="particle"):
+def generate_lognormal_fraction(
+    primitive, name, n, d_g, sigma_g, particle_class="particle"
+):
     hide(primitive, False)
 
     particles = list()
@@ -251,7 +279,9 @@ def generate_lognormal_fraction(primitive, name, n, d_g, sigma_g, particle_class
 
         randomize_shape(particle)
 
-        size = np.random.lognormal(mean=mu_particle_size, sigma=sigma_particle_size)
+        size = np.random.lognormal(
+            mean=mu_particle_size, sigma=sigma_particle_size
+        )
         set_size(particle, size)
 
         particles.append(particle)

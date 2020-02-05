@@ -1,15 +1,18 @@
-import bpy
 import os
-from recipe_utilities import get_random_string
-import blender.particles
 import tempfile
+
+import blender.particles
+import bpy
 from PIL import Image
+from recipe_utilities import get_random_string
 
 
 class TemporaryState:
     def __init__(self):
         self.original_path = bpy.data.filepath
-        self.temporary_path = self.original_path + "_state_" + get_random_string()
+        self.temporary_path = (
+            self.original_path + "_state_" + get_random_string()
+        )
 
     def __enter__(self):
         bpy.ops.wm.save_as_mainfile(filepath=self.temporary_path)
@@ -126,15 +129,19 @@ def save_annotation_file(annotation_file_path, particles, do_append=False):
 
     with open(annotation_file_path, "a+") as annotation_file:
         for particle in particles:
-            assert "class" in particle, "You need to assign the class attribute of the particles before saving " \
-                                        "annotations:\nExample: particle['class'] = 'test'"
+            assert "class" in particle, (
+                "You need to assign the class attribute of the particles before saving "
+                "annotations:\nExample: particle['class'] = 'test'"
+            )
             annotation_file.write(particle["class"] + "\n")
 
 
 def render_object_masks(particles, image_id_string, absolute_output_directory):
     particles = blender.particles.ensure_iterability(particles)
 
-    annotation_file_path = os.path.join(absolute_output_directory, "..", "annotations.txt")
+    annotation_file_path = os.path.join(
+        absolute_output_directory, "..", "annotations.txt"
+    )
     save_annotation_file(annotation_file_path, particles)
 
     with TemporaryState():
@@ -152,15 +159,19 @@ def render_object_masks(particles, image_id_string, absolute_output_directory):
         for mask_id, particle in enumerate(particles):
             blender.particles.hide(particle, False)
 
-            output_filename = image_id_string + "_mask{:06d}.png".format(mask_id)
-            output_file_path = os.path.join(absolute_output_directory, output_filename)
+            output_filename = image_id_string + "_mask{:06d}.png".format(
+                mask_id
+            )
+            output_file_path = os.path.join(
+                absolute_output_directory, output_filename
+            )
             render_to_file(output_file_path)
 
             blender.particles.hide(particle)
 
 
 def create_diffuse_color_material(name, color):
-    material = (bpy.data.materials.get(name) or bpy.data.materials.new(name))
+    material = bpy.data.materials.get(name) or bpy.data.materials.new(name)
     material.diffuse_color = color
     return material
 
@@ -170,10 +181,14 @@ def replace_material(instance, material):
     instance.data.materials.append(material)
 
 
-def render_occlusion_masks(particles, image_id_string, absolute_output_directory):
+def render_occlusion_masks(
+    particles, image_id_string, absolute_output_directory
+):
     particles = blender.particles.ensure_iterability(particles)
 
-    annotation_file_path = os.path.join(absolute_output_directory, "..", "annotations.txt")
+    annotation_file_path = os.path.join(
+        absolute_output_directory, "..", "annotations.txt"
+    )
     save_annotation_file(annotation_file_path, particles)
 
     with TemporaryState():
@@ -181,8 +196,12 @@ def render_occlusion_masks(particles, image_id_string, absolute_output_directory
         setup_workbench_renderer()
         bpy.context.scene.display.shading.color_type = "MATERIAL"
 
-        material_white = create_diffuse_color_material("white_mask_material", (1, 1, 1, 1))
-        material_black = create_diffuse_color_material("black_mask_material", (0, 0, 0, 1))
+        material_white = create_diffuse_color_material(
+            "white_mask_material", (1, 1, 1, 1)
+        )
+        material_black = create_diffuse_color_material(
+            "black_mask_material", (0, 0, 0, 1)
+        )
 
         # Replace textures of all meshes with black texture.
         for instance in bpy.data.objects:
@@ -193,8 +212,12 @@ def render_occlusion_masks(particles, image_id_string, absolute_output_directory
         for mask_id, particle in enumerate(particles):
             replace_material(particle, material_white)
 
-            output_filename = image_id_string + "_mask{:06d}.png".format(mask_id)
-            output_file_path = os.path.join(absolute_output_directory, output_filename)
+            output_filename = image_id_string + "_mask{:06d}.png".format(
+                mask_id
+            )
+            output_file_path = os.path.join(
+                absolute_output_directory, output_filename
+            )
             render_to_file(output_file_path)
 
             replace_material(particle, material_black)
