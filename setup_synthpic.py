@@ -57,14 +57,13 @@ def get_blender_version_string():
     )
 
 
-def get_external_module_folder():
+def get_external_module_folder_path():
     self_folder = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(self_folder, "external")
 
 
 def get_blender_executable_path():
-    blender_path_base = get_external_module_folder()
-    blender_version_string = get_blender_version_string()
+    blender_folder_path = get_blender_folder_path()
     os_name = get_os_name()
 
     if os_name == "windows":
@@ -72,26 +71,20 @@ def get_blender_executable_path():
     elif os_name == "linux":
         blender_filename = "blender"
 
-    return os.path.join(
-        blender_path_base, blender_version_string, blender_filename
-    )
+    return os.path.join(blender_folder_path, blender_filename)
 
 
-def get_blender_python_folder():
-    external_module_folder = get_external_module_folder()
-    blender_version_string = get_blender_version_string()
+def get_blender_python_folder_path():
+    blender_folder_path = get_blender_folder_path()
     blender_version_number_string = get_blender_version_number_string()
 
     return os.path.join(
-        external_module_folder,
-        blender_version_string,
-        blender_version_number_string,
-        "python",
+        blender_folder_path, blender_version_number_string, "python",
     )
 
 
 def get_blender_python_executable_path():
-    blender_python_folder = get_blender_python_folder()
+    blender_python_folder = get_blender_python_folder_path()
 
     os_name = get_os_name()
 
@@ -129,7 +122,7 @@ def install_dependencies():
 
     if os_name == "linux":
         numpy_folder = os.path.join(
-            get_blender_python_folder(),
+            get_blender_python_folder_path(),
             "lib",
             "python3.7",
             "site-packages",
@@ -137,7 +130,7 @@ def install_dependencies():
         )
     elif os_name == "windows":
         numpy_folder = os.path.join(
-            get_blender_python_folder(), "lib", "site-packages", "numpy"
+            get_blender_python_folder_path(), "lib", "site-packages", "numpy"
         )
 
     shutil.rmtree(numpy_folder)
@@ -175,7 +168,7 @@ def download_blender():
 
     url = url_base + blender_version_string + archive_extension
 
-    archive_folder = get_external_module_folder()
+    archive_folder = get_external_module_folder_path()
     archive_path = os.path.join(
         archive_folder, blender_version_string + archive_extension
     )
@@ -190,6 +183,22 @@ def download_blender():
     os.remove(archive_path)
 
 
+def get_blender_folder_path():
+    external_module_folder = get_external_module_folder_path()
+    blender_version_string = get_blender_version_string()
+
+    return os.path.join(external_module_folder, blender_version_string)
+
+
+def delete_old_blender():
+    old_blender_folder_path = get_blender_folder_path()
+
+    if os.path.exists(old_blender_folder_path):
+        print("Deleting old Blender folder...")
+        shutil.rmtree(old_blender_folder_path, ignore_errors=True)
+
+
 if __name__ == "__main__":
+    delete_old_blender()
     download_blender()
     install_dependencies()
