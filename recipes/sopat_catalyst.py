@@ -12,9 +12,9 @@ root_dir = os.path.join(os.path.dirname(D.filepath), "..")
 if root_dir not in sys.path:
     sys.path.append(root_dir)
 
-import blender.particles
-import blender.scene
-from recipe_utilities import Timer
+import blender.particles  # isort:skip
+import blender.scene  # isort:skip
+
 
 # # Force reload in case you edit the source after you first start the blender session.
 # import importlib
