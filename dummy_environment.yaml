@@ -1,0 +1,16 @@
+# This environment is only for PyCharm, so that it knows about the packages available in blenders python installation,
+# so that automatic code completion and refactoring methods work.
+
+name: synthpic
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - numpy
+  - Pillow
+  - pandas
+  - scipy
+  - pip
+  - pip:
+    - trimesh
+

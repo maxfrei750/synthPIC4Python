@@ -9,7 +9,7 @@ import trimesh
 
 def is_iterable(obj):
     try:
-        iterator = iter(obj)
+        _ = iter(obj)
     except TypeError:
         return False
     else:
@@ -21,6 +21,13 @@ def ensure_iterability(obj):
         obj = [obj]
 
     return obj
+
+
+def ensure_double_iterability(obj):
+    if not is_iterable(obj):
+        return [[obj]]
+    elif not is_iterable(obj[0]):
+        return [obj]
 
 
 def select_only(particles):
@@ -55,6 +62,10 @@ def hide(particles, state=True):
     for particle in particles:
         particle.hide_viewport = state
         particle.hide_render = state
+
+
+def show(particles, state=True):
+    hide(particles, state=(not state))
 
 
 def load_primitive(blend_file):
@@ -138,20 +149,91 @@ def is_hair(particle):
         return particle.particle_systems[0].settings.type == "HAIR"
 
 
-def set_hair_radius(particles, root_radius, tip_radius=None):
+def get_hair_spline_vertices(particles):
     particles = ensure_iterability(particles)
 
-    if tip_radius is None:
-        tip_radius = root_radius
+    vertices_sets = []
+
+    for particle in particles:
+
+        assert is_hair(particle), "Expected particle to be a hair object."
+
+        select_only(particle)
+
+        modifier_name = particle.particle_systems[0].name
+
+        # TODO: Replace the conversion of the modifier to a mesh with a data, instead of an operation based approach.
+        bpy.ops.object.modifier_convert(modifier=modifier_name)
+
+        temp_object = bpy.context.view_layer.objects.active
+        temp_mesh = temp_object.data
+
+        keypoints = []
+
+        for vertex in temp_mesh.vertices:
+            keypoints.append([vertex.co.x, vertex.co.y, vertex.co.z])
+
+        vertices_sets.append(keypoints)
+
+        delete(temp_object)
+
+    return vertices_sets
+
+
+def get_hair_spline_keypoints(particles):
+    vertices_sets = get_hair_spline_vertices(particles)
+
+    keypoint_sets = [
+        [vertex[:2] for vertex in vertices] for vertices in vertices_sets
+    ]
+
+    return keypoint_sets
+
+
+def set_hair_diameter(particles, root_diameter, tip_diameter=None):
+    particles = ensure_iterability(particles)
+
+    if tip_diameter is None:
+        tip_diameter = root_diameter
 
     for particle in particles:
         assert is_hair(
             particle
         ), "Please use the set_size method for the sizing of non-hair objects."
 
+        # Due to a bug in Blender (https://developer.blender.org/T73620),
+        # the "radius" properties of hair systems are actually controlling the diameter.
+        # This will be fixed by renaming the properties in Blender 2.82.
         particle.particle_systems[0].settings.radius_scale = 1
-        particle.particle_systems[0].settings.root_radius = root_radius
-        particle.particle_systems[0].settings.tip_radius = tip_radius
+        particle.particle_systems[0].settings.root_radius = root_diameter
+        particle.particle_systems[0].settings.tip_radius = tip_diameter
+
+
+def get_hair_diameter(particles):
+    particles = ensure_iterability(particles)
+
+    diameters = []
+
+    for particle in particles:
+        assert is_hair(
+            particle
+        ), "Please use the set_size method for the sizing of non-hair objects."
+
+        # Due to a bug in Blender (https://developer.blender.org/T73620),
+        # the "radius" properties of hair systems are actually controlling the diameter.
+        # This will be fixed by renaming the properties in Blender 2.82.
+        diameter = (
+            (
+                particle.particle_systems[0].settings.root_radius
+                + particle.particle_systems[0].settings.tip_radius
+            )
+            / 2
+            * particle.particle_systems[0].settings.radius_scale
+        )
+
+        diameters.append(diameter)
+
+    return diameters
 
 
 def set_random_hair_length_factor(particles):
@@ -185,12 +267,27 @@ def set_size(particles, target_size_xyz):
     for particle in particles:
         assert not is_hair(
             particle
-        ), "Please use the set_size_hair method for the sizing of hair objects."
+        ), "Please use the set_hair_diameter and set_hair_length_factor methods for the sizing of hair objects."
 
         scale_xyz = tuple(
             a / b for a, b in zip(target_size_xyz, particle.dimensions)
         )
         particle.scale = scale_xyz
+
+
+def get_size(particles):
+    particles = ensure_iterability(particles)
+
+    sizes = []
+
+    for particle in particles:
+        assert not is_hair(
+            particle
+        ), "Please use the get_mean_hair_diameter method for getting the sizes of hair objects."
+
+        sizes.append(particle.scale)
+
+    return sizes
 
 
 def set_smooth_shading(particles, state):
@@ -249,6 +346,8 @@ def place_randomly(
     upper_space_boundaries_xyz,
     do_random_rotation=False,
 ):
+    particles = ensure_iterability(particles)
+
     for particle in particles:
         random_location = tuple(
             np.random.randint(
@@ -257,9 +356,24 @@ def place_randomly(
         )
         particle.location = random_location
 
-        if do_random_rotation:
-            random_rotation = tuple(np.random.rand(3) * 2 * np.pi)
-            particle.rotation_euler = random_rotation
+    if do_random_rotation:
+        rotate_randomly(particles)
+
+
+def place(particles, positions):
+    particles = ensure_iterability(particles)
+    positions = ensure_double_iterability(positions)
+
+    for particle, position in zip(particles, positions):
+        particle.location = tuple(position)
+
+
+def rotate_randomly(particles):
+    particles = ensure_iterability(particles)
+
+    for particle in particles:
+        random_rotation = tuple(np.random.rand(3) * 2 * np.pi)
+        particle.rotation_euler = random_rotation
 
 
 def generate_lognormal_fraction(

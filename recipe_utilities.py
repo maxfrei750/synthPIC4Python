@@ -74,3 +74,8 @@ def generate_uniform_noise_image(
     )
 
     return noise_image
+
+
+def set_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)

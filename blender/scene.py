@@ -3,8 +3,10 @@ import tempfile
 
 import blender.particles
 import bpy
+import pandas as pd
 from PIL import Image
 from recipe_utilities import get_random_string
+from spline_utilities import calculate_spline_length
 
 
 class TemporaryState:
@@ -72,7 +74,7 @@ def apply_default_settings(engine="EEVEE"):
     enable_all_rendering_devices()
 
     if engine == "CYCLES":
-        bpy.context.scene.cycles.samples = 16
+        bpy.context.scene.cycles.samples = 4
     if engine == "BLENDER_EEVEE":
         bpy.context.scene.eevee.taa_render_samples = 32
 
@@ -221,3 +223,104 @@ def render_occlusion_masks(
             render_to_file(output_file_path)
 
             replace_material(particle, material_black)
+
+
+def get_space_boundaries(resolution):
+    lower_space_boundaries_xyz = (
+        -resolution[0] / 2,
+        -resolution[1] / 2,
+        -100,
+    )
+    upper_space_boundaries_xyz = (
+        resolution[0] / 2,
+        resolution[1] / 2,
+        100,
+    )
+
+    return lower_space_boundaries_xyz, upper_space_boundaries_xyz
+
+
+def save_spline_data(
+    particles, output_folder_path, image_id_string, resolution
+):
+    fiber_diameters, keypoint_sets = _gather_spline_data(particles)
+
+    lower_space_boundaries_xyz, _ = get_space_boundaries(resolution)
+    x_min, y_min, _ = lower_space_boundaries_xyz
+    image_width, image_height = resolution
+
+    spline_id_offset = 0
+
+    for spline_id, (keypoints, fiber_diameter) in enumerate(
+        zip(keypoint_sets, fiber_diameters)
+    ):
+        spline_data = _prepare_spline_data_for_saving(
+            keypoints, fiber_diameter, image_width, image_height, x_min, y_min
+        )
+
+        if spline_data.empty:
+            spline_id_offset -= 1
+            continue
+
+        spline_id += spline_id_offset
+
+        _write_spline_data_to_file(
+            spline_data, output_folder_path, image_id_string, spline_id
+        )
+
+
+def _write_spline_data_to_file(
+    spline_data, output_folder_path, image_id_string, spline_id
+):
+    spline_file_name = f"{image_id_string}_spline{spline_id:06d}.csv"
+    spline_file_path = os.path.join(output_folder_path, spline_file_name)
+    spline_data.to_csv(spline_file_path, index=False)
+
+
+def _prepare_spline_data_for_saving(
+    keypoints, fiber_diameter, image_width, image_height, x_min, y_min
+):
+    keypoints_x, keypoints_y = _separate_keypoint_coordinates(keypoints)
+    keypoints_x, keypoints_y = _offset_keypoints(
+        keypoints_x, keypoints_y, x_min, y_min
+    )
+    keypoints_y = _horizontally_mirror_keypoints(keypoints_y, image_height)
+    spline_data = pd.DataFrame(
+        {"x": keypoints_x, "y": keypoints_y, "width": fiber_diameter}
+    )
+    spline_data = _filter_keypoints_outside_of_image(
+        spline_data, image_height, image_width
+    )
+
+    return spline_data
+
+
+def _offset_keypoints(keypoints_x, keypoints_y, x_min, y_min):
+    keypoints_x = [keypoint_x - x_min for keypoint_x in keypoints_x]
+    keypoints_y = [keypoint_y - y_min for keypoint_y in keypoints_y]
+    return keypoints_x, keypoints_y
+
+
+def _separate_keypoint_coordinates(keypoints):
+    keypoints_x = [keypoint[0] for keypoint in keypoints]
+    keypoints_y = [keypoint[1] for keypoint in keypoints]
+    return keypoints_x, keypoints_y
+
+
+def _gather_spline_data(particles):
+    keypoint_sets = blender.particles.get_hair_spline_keypoints(particles)
+    fiber_diameters = blender.particles.get_hair_diameter(particles)
+    return fiber_diameters, keypoint_sets
+
+
+def _filter_keypoints_outside_of_image(spline_data, height, width):
+    spline_data = spline_data.query(
+        f"x>=0 and x<={width} and y>=0 and y<={height}"
+    )
+    return spline_data
+
+
+def _horizontally_mirror_keypoints(keypoints_y, height):
+    # flip y-axis (in blender the y-axis is oriented in the up-direction of the image)
+    keypoints_y = [height - keypoint_y for keypoint_y in keypoints_y]
+    return keypoints_y
