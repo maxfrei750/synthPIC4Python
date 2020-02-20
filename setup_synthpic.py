@@ -198,7 +198,32 @@ def delete_old_blender():
         shutil.rmtree(old_blender_folder_path, ignore_errors=True)
 
 
+def activate_addon(addon):
+    blender_executable_path = get_blender_executable_path()
+
+    execute_and_print(
+        [
+            blender_executable_path,
+            "--background",
+            "--python-expr",
+            f"import bpy; bpy.ops.preferences.addon_enable(module='{addon}')",
+        ]
+    )
+
+
+def activate_addons():
+    print("Activating addons...")
+
+    with open("addons.txt") as file:
+        addons = [line.rstrip() for line in file]
+
+    for addon in addons:
+        print(f"\tAddon: {addon}")
+        activate_addon(addon)
+
+
 if __name__ == "__main__":
     delete_old_blender()
     download_blender()
     install_dependencies()
+    activate_addons()
