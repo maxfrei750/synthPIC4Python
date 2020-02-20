@@ -15,4 +15,4 @@ def execute(cmd):
 
 def execute_and_print(cmd):
     for line in execute(cmd):
-        print(line)
+        print("\t" + line.rstrip())
