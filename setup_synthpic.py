@@ -104,7 +104,7 @@ def install_dependencies():
         os.path.dirname(os.path.realpath(__file__)), "requirements.txt"
     )
 
-    print("Install dependencies.")
+    print("Installing dependencies...")
 
     execute_and_print([blender_python_executable_path, "-m", "ensurepip"])
     execute_and_print(
