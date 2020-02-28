@@ -240,7 +240,7 @@ if __name__ == "__main__":
     num_images = 500
     resolution = (1280, 960)
     output_folder_path = os.path.join(
-        ROOT_DIR, "output", "+clutter_+loops_+overlaps (synthetic)"
+        ROOT_DIR, "output", "+loops_+clutter_+overlaps (synthetic)"
     )
 
     generate_samples(num_images, output_folder_path, resolution)
