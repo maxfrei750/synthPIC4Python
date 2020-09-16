@@ -1,13 +1,17 @@
-[![License](https://img.shields.io/github/license/maxfrei750/default_license.svg)](https://github.com/maxfrei750/synthPIC4Matlab/blob/master/LICENSE) 
+[![Paper (Powder Technology)](https://img.shields.io/badge/DOI-10.1016/j.powtec.2020.08.034-blue.svg)](https://doi.org/10.1016/j.powtec.2020.08.034)
+[![Paper (arXiv)](https://img.shields.io/badge/arXiv-2006.04552-b31b1b.svg)](https://arxiv.org/abs/2006.04552)
+[![License](https://img.shields.io/github/license/maxfrei750/FiberAnnotator.svg)](https://github.com/maxfrei750/FiberAnnotator/blob/master/LICENSE) 
 [![GitHub](https://img.shields.io/badge/mirror-GitHub-3D76C2.svg)](https://github.com/maxfrei750/synthPIC4Python)
 [![GitLab](https://img.shields.io/badge/mirror-GitLab-6C488A.svg)](https://gitlab.com/maxfrei750/synthPIC4Python)
+
+
 
 ![Logo](./assets/logo.png)
 
 # synthPIC4Python
 The *synthetic Particle Image Creator (synthPIC) for Python* is a toolbox to create synthetic training and benchmark data for image based particle analysis methods. As of now, it is in a very early stage of development. Therefore, there is currently very little documentation and every current feature might be subjected to heavy changes in the future.
 
-In principle, synthPIC4Python is simply a set of scripts, .blend-files and concepts to control [Blender](https://www.blender.org/), to have it render large sets of randomized images, depicting large quantities of objects. There is no limitation concerning the shape of the objects, as they are controlled only by the so-called primitives in the .blend-files that the user supplies. However, it was created with the use for particle images in mind. Apart from the images themselves, synthPIC4Python also offers easy solutions to render instance masks, so that the resulting data can be used for the training of various segmentation and detection algorithms (e.g. Faster-RCNN, Mask-RCNN, etc.).
+In principle, synthPIC4Python is simply a set of scripts, .blend-files and concepts to control [Blender](https://www.blender.org/), to have it render large sets of randomized images, depicting large quantities of objects. There is no limitation concerning the shape of the objects, as they are controlled only by the so-called primitives in the .blend-files that the user supplies. However, it was created with the use for particle images in mind. Apart from the images themselves, synthPIC4Python also offers easy solutions to render instance masks, so that the resulting data can be used for the training of various segmentation and detection algorithms (e.g. Faster R-CNN, Mask R-CNN, FibeR-CNN, U-Net etc.).
 
 
 ## Table of Contents
@@ -17,7 +21,7 @@ In principle, synthPIC4Python is simply a set of scripts, .blend-files and conce
    * [Setup](#setup)
    * [Getting Started](#getting-started)
    * [Known Limitations](#known-limitations)
-
+   * [Citation](#citation)
 
 ## Setup
 The setup is very simple. Just run:
@@ -27,7 +31,7 @@ cd synthPIC4Python
 python setup_synthpic.py
 ```
 
-The setup script then downloads a local copy of the appropriate blender version for your operating system and installs some requirements into Blender's custom python environment. The setup process does not impact other Blender installations on you machine.
+The setup script then downloads a local copy of the appropriate blender version for your operating system and installs some requirements into Blender's custom python environment. The setup process does not impact other Blender installations on your machine.
 
 ## Workflow
 When using synthPIC, we need to supply three types of resources:
@@ -47,3 +51,17 @@ A good starting point is the example recipe `./recipes/sopat_catalyst.py` with t
 * Only the rather slow cycles renderer works on headless servers at the moment. 
 This also affects the rendering of masks, which uses the very quick Workbench renderer.
 A possible solution would be the optional utilization of the cycles renderer for the rendering of masks.
+
+## Citation
+If you use this annotation tool for a publication, then please cite the accompanying publication using the following bibtex-entry:
+```
+@article{Frei.2020,
+	title = {{FibeR}-{CNN}: {Expanding} {Mask} {R}-{CNN} to improve image-based fiber analysis},
+	issn = {0032-5910},
+	url = {https://doi.org/10.1016/j.powtec.2020.08.034},
+	doi = {10.1016/j.powtec.2020.08.034},
+	journal = {Powder Technology},
+	author = {Frei, M. and Kruis, F. E.},
+	year = {2020},
+}
+```
