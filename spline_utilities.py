@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from scipy import integrate, interpolate
-from scipy.integrate.quadrature import AccuracyWarning
+from scipy.integrate import AccuracyWarning
 
 
 def _remove_duplicate_vertices(vertices):
