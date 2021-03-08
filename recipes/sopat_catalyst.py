@@ -1,16 +1,18 @@
-import os
 import random
 import sys
+from pathlib import Path
 
 import bpy
+import numpy as np
 
 C = bpy.context
 D = bpy.data
 R = C.scene.render
 
-root_dir = os.path.join(os.path.dirname(D.filepath), "..")
-if root_dir not in sys.path:
-    sys.path.append(root_dir)
+root_dir = Path(D.filepath).parent.parent
+# print(root_dir)
+if str(root_dir) not in sys.path:
+    sys.path.append(str(root_dir))
 
 import blender.particles  # isort:skip
 import blender.scene  # isort:skip
@@ -28,14 +30,25 @@ blender.scene.apply_default_settings()
 resolution = (1032, 825)
 blender.scene.set_resolution(resolution)
 
-primitive_path_light = os.path.join(
-    root_dir, "primitives", "sopat_catalyst", "light.blend"
-)
-primitive_path_dark = os.path.join(
-    root_dir, "primitives", "sopat_catalyst", "dark.blend"
+primitive_path_light = (
+    root_dir / "primitives" / "sopat_catalyst" / "light.blend"
 )
 
-n_images = 20
+primitive_path_dark = root_dir / "primitives" / "sopat_catalyst" / "dark.blend"
+
+
+n_images = 10
+
+rng = np.random.default_rng(42)
+
+uniform_distribution_float = rng.uniform
+uniform_distribution_integer = rng.integers
+
+n_min_max_dark = [250, 350]
+n_min_max_light = [25, 50]
+
+d_g_min_max = [50, 70]
+sigma_g_min_max = [1.3, 1.7]
 
 for image_id in range(n_images):
     with blender.scene.TemporaryState():
@@ -49,18 +62,18 @@ for image_id in range(n_images):
 
         # Create fraction 1: dark particles
         name = "dark"
-        n = 200
-        d_g = 50
-        sigma_g = 1.6
+        n = uniform_distribution_integer(*n_min_max_dark)
+        d_g = uniform_distribution_float(*d_g_min_max)
+        sigma_g = uniform_distribution_float(*sigma_g_min_max)
         particles_dark = blender.particles.generate_lognormal_fraction(
             primitive_dark, name, n, d_g, sigma_g, particle_class="dark"
         )
 
         # Create fraction 2: light particles
         name = "light"
-        n = 25
-        d_g = 50
-        sigma_g = 1.6
+        n = uniform_distribution_integer(*n_min_max_light)
+        d_g = uniform_distribution_float(*d_g_min_max)
+        sigma_g = uniform_distribution_float(*sigma_g_min_max)
         particles_light = blender.particles.generate_lognormal_fraction(
             primitive_light, name, n, d_g, sigma_g, particle_class="light"
         )
@@ -91,19 +104,11 @@ for image_id in range(n_images):
         )
 
         # Render and save current image and masks.
-        image_id_string = "image{:06d}".format(image_id)
+        output_root = root_dir / "output" / "sopat" / "clean"
 
-        output_folder_path_base = os.path.join(
-            root_dir, "output", "sopat", image_id_string
-        )
-
-        image_file_name = image_id_string + ".png"
-        image_folder_path = os.path.join(output_folder_path_base, "images")
-        image_file_path = os.path.join(image_folder_path, image_file_name)
+        image_file_name = f"image_{image_id}.png"
+        image_file_path = output_root / image_file_name
         blender.scene.render_to_file(image_file_path)
 
-        mask_folder_path = os.path.join(output_folder_path_base, "masks")
-        # blender.scene.render_object_masks(particles_light, image_id_string, mask_folder_path)
-        blender.scene.render_occlusion_masks(
-            particles_light, image_id_string, mask_folder_path
-        )
+        blender.scene.render_occlusion_masks(particles, image_id, output_root)
+        # blender.scene.render_object_masks(particles, image_id, output_root)

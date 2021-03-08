@@ -1,10 +1,12 @@
 import os
 import tempfile
+from pathlib import Path
 
-import blender.particles
 import bpy
 import pandas as pd
 from PIL import Image
+
+import blender.particles
 from recipe_utilities import get_random_string
 from spline_utilities import calculate_spline_length
 
@@ -107,7 +109,8 @@ def setup_workbench_renderer():
 
 def render_to_file(absolute_file_path):
     previous_path = bpy.context.scene.render.filepath
-    bpy.context.scene.render.filepath = absolute_file_path
+
+    bpy.context.scene.render.filepath = str(absolute_file_path)
     bpy.ops.render.render(write_still=True)
     bpy.context.scene.render.filepath = previous_path
 
@@ -138,38 +141,44 @@ def save_annotation_file(annotation_file_path, particles, do_append=False):
             annotation_file.write(particle["class"] + "\n")
 
 
-def render_object_masks(particles, image_id_string, absolute_output_directory):
+# TODO: Adapt to render_occlusion_masks
+def render_object_masks(particles, image_id, absolute_output_directory):
+    absolute_output_directory = Path(absolute_output_directory)
+
+    if not absolute_output_directory.is_absolute():
+        raise ValueError(
+            f"{absolute_output_directory} is not an absolute directory."
+        )
+
     particles = blender.particles.ensure_iterability(particles)
 
-    annotation_file_path = os.path.join(
-        absolute_output_directory, "..", "annotations.txt"
-    )
-    save_annotation_file(annotation_file_path, particles)
+    # with TemporaryState():
+    # Set render settings.
+    setup_workbench_renderer()
+    bpy.context.scene.display.shading.color_type = "SINGLE"
+    bpy.context.scene.display.shading.single_color = (1, 1, 1)
 
-    with TemporaryState():
-        # Set render settings.
-        setup_workbench_renderer()
-        bpy.context.scene.display.shading.color_type = "SINGLE"
-        bpy.context.scene.display.shading.single_color = (1, 1, 1)
+    # Hide all meshes.
+    for instance in bpy.data.objects:
+        if instance.type == "MESH":
+            instance.hide_render = True
 
-        # Hide all meshes.
-        for instance in bpy.data.objects:
-            if instance.type == "MESH":
-                instance.hide_render = True
+    # Unhide relevant particles one by one and render them.
+    for mask_id, particle in enumerate(particles):
+        blender.particles.hide(particle, False)
 
-        # Unhide relevant particles one by one and render them.
-        for mask_id, particle in enumerate(particles):
-            blender.particles.hide(particle, False)
+        assert "class" in particle, (
+            "You need to assign the class attribute of the particles before saving "
+            "annotations:\nExample: particle['class'] = 'test'"
+        )
 
-            output_filename = image_id_string + "_mask{:06d}.png".format(
-                mask_id
-            )
-            output_file_path = os.path.join(
-                absolute_output_directory, output_filename
-            )
-            render_to_file(output_file_path)
+        output_filename = f"mask_{image_id}_{mask_id}.png"
+        output_file_path = (
+            absolute_output_directory / particle["class"] / output_filename
+        )
+        render_to_file(output_file_path)
 
-            blender.particles.hide(particle)
+        blender.particles.hide(particle)
 
 
 def create_diffuse_color_material(name, color):
@@ -183,46 +192,48 @@ def replace_material(instance, material):
     instance.data.materials.append(material)
 
 
-def render_occlusion_masks(
-    particles, image_id_string, absolute_output_directory
-):
+def render_occlusion_masks(particles, image_id, absolute_output_directory):
+    absolute_output_directory = Path(absolute_output_directory)
+
+    if not absolute_output_directory.is_absolute():
+        raise ValueError(
+            f"{absolute_output_directory} is not an absolute directory."
+        )
+
     particles = blender.particles.ensure_iterability(particles)
 
-    annotation_file_path = os.path.join(
-        absolute_output_directory, "..", "annotations.txt"
+    # with TemporaryState():
+    # Set render settings.
+    setup_workbench_renderer()
+    bpy.context.scene.display.shading.color_type = "MATERIAL"
+
+    material_white = create_diffuse_color_material(
+        "white_mask_material", (1, 1, 1, 1)
     )
-    save_annotation_file(annotation_file_path, particles)
+    material_black = create_diffuse_color_material(
+        "black_mask_material", (0, 0, 0, 1)
+    )
 
-    with TemporaryState():
-        # Set render settings.
-        setup_workbench_renderer()
-        bpy.context.scene.display.shading.color_type = "MATERIAL"
+    # Replace textures of all meshes with black texture.
+    for instance in bpy.data.objects:
+        if instance.type == "MESH":
+            replace_material(instance, material_black)
 
-        material_white = create_diffuse_color_material(
-            "white_mask_material", (1, 1, 1, 1)
+    # Change texture of particles to white texture one by one and render them.
+    for mask_id, particle in enumerate(particles):
+        replace_material(particle, material_white)
+
+        assert "class" in particle, (
+            "You need to assign the class attribute of the particles before saving "
+            "annotations:\nExample: particle['class'] = 'test'"
         )
-        material_black = create_diffuse_color_material(
-            "black_mask_material", (0, 0, 0, 1)
+
+        output_filename = f"mask_{image_id}_{mask_id}.png"
+        output_file_path = (
+            absolute_output_directory / particle["class"] / output_filename
         )
-
-        # Replace textures of all meshes with black texture.
-        for instance in bpy.data.objects:
-            if instance.type == "MESH":
-                replace_material(instance, material_black)
-
-        # Change texture of particles to white texture one by one and render them.
-        for mask_id, particle in enumerate(particles):
-            replace_material(particle, material_white)
-
-            output_filename = image_id_string + "_mask{:06d}.png".format(
-                mask_id
-            )
-            output_file_path = os.path.join(
-                absolute_output_directory, output_filename
-            )
-            render_to_file(output_file_path)
-
-            replace_material(particle, material_black)
+        render_to_file(output_file_path)
+        replace_material(particle, material_black)
 
 
 def get_space_boundaries(resolution):
