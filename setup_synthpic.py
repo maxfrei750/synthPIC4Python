@@ -79,7 +79,9 @@ def get_blender_python_folder_path():
     blender_version_number_string = get_blender_version_number_string()
 
     return os.path.join(
-        blender_folder_path, blender_version_number_string, "python",
+        blender_folder_path,
+        blender_version_number_string,
+        "python",
     )
 
 

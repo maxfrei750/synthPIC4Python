@@ -17,9 +17,10 @@ if ROOT_DIR not in sys.path:
 import blender.particles  # isort:skip
 import blender.scene  # isort:skip
 from recipe_utilities import (
-    generate_gaussian_noise_image,
+    generate_gaussian_noise_image,  # isort:skip
     set_random_seed,
-)  # isort:skip
+)
+
 from spline_utilities import calculate_spline_length  # isort:skip
 
 
@@ -97,7 +98,11 @@ def generate_samples(num_images, output_folder_path, resolution):
             particles = create_geometry(resolution)
             image = render_image(resolution)
             save_output_data(
-                image, image_id, output_folder_path, particles, resolution,
+                image,
+                image_id,
+                output_folder_path,
+                particles,
+                resolution,
             )
 
 
@@ -108,7 +113,10 @@ def save_output_data(
     image_id_string = f"synthetic{image_id:06d}"
     save_image(image, output_folder_path, image_id_string)
     blender.scene.save_spline_data(
-        particles_fiber, output_folder_path, image_id_string, resolution,
+        particles_fiber,
+        output_folder_path,
+        image_id_string,
+        resolution,
     )
 
 
@@ -120,7 +128,10 @@ def render_image(resolution):
         particle_layer,
     ) = create_image_layers(resolution)
     final_image = compose_layers(
-        background_layer, background_noise_layer, noise_layer, particle_layer,
+        background_layer,
+        background_noise_layer,
+        noise_layer,
+        particle_layer,
     )
     return final_image
 
@@ -191,10 +202,18 @@ def create_image_layers(resolution):
     particle_layer = blender.scene.render_to_variable()
     particle_layer = post_process_particle_layer(particle_layer)
     background_layer = generate_gaussian_noise_image(
-        resolution, scale=200, strength=0.1, contrast=0.2, brightness=0.6,
+        resolution,
+        scale=200,
+        strength=0.1,
+        contrast=0.2,
+        brightness=0.6,
     )
     background_noise_layer = generate_gaussian_noise_image(
-        resolution, scale=20, strength=0.1, contrast=0.2, brightness=0.6,
+        resolution,
+        scale=20,
+        strength=0.1,
+        contrast=0.2,
+        brightness=0.6,
     )
     noise_layer = generate_gaussian_noise_image(resolution, strength=0.075)
     return (
