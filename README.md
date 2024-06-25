@@ -1,3 +1,9 @@
+# ⚠️ DEPRECATED ⚠️
+This toolbox was superseeded by [synthPIC2](https://github.com/IntelligentPMT/synthPIC2), which is much more powerful and robust.
+
+---
+
+
 [![Paper (Powder Technology)](https://img.shields.io/badge/DOI-10.1016/j.powtec.2020.08.034-blue.svg)](https://doi.org/10.1016/j.powtec.2020.08.034)
 [![Paper (arXiv)](https://img.shields.io/badge/arXiv-2006.04552-b31b1b.svg)](https://arxiv.org/abs/2006.04552)
 [![License](https://img.shields.io/github/license/maxfrei750/FiberAnnotator.svg)](https://github.com/maxfrei750/FiberAnnotator/blob/master/LICENSE) 
